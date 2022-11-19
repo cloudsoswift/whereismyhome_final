@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.home.apart.model.mapper.ApartMapper">
+
+	<select id="searchApart" parameterType="Map" resultType="HouseDTO">
+		select i.aptCode, i.apartmentName, b.dealAmount, b.area, b.floor, 
+				concat(b.dealYear,'.', b.dealMonth,'.', b.dealDay) date, 
+				i.lng, i.lat, ifnull(l.like_id,  -1) like_id, b.no
+		from housedeal as b left join houseinfo as i
+		on b.aptCode = i.aptCode left join houselike as l
+		on b.no = l.no
+		where left(i.aptCode, 5) = #{code} and b.dealYear = #{year} and b.dealMonth = #{month} 
+		order by l.like_id DESC
+	</select>
+
+	<insert id="addInterestApart" parameterType="HouseLikeDTO">
+		insert into houselike (user_id, no, register_time, ip_address)
+		values(#{user_id}, #{no}, now(), #{ip_address})
+	</insert>
+	
+	<delete id="deleteInterestApart" parameterType="Map">
+		delete from houselike
+		where user_id = #{user_id} and no = #{no}
+	</delete>
+
+</mapper>

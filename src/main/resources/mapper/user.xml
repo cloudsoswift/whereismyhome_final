@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.home.user.model.mapper.UserMapper">
+
+	<resultMap type="UserDTO" id="user">
+		<result column="user_id" property="userId"/>
+		<result column="user_password" property="userPassword"/>
+		<result column="user_name" property="userName"/>
+		<result column="user_address" property="userAddress"/>
+		<result column="user_phone" property="userPhone"/>
+	</resultMap>
+
+	<insert id="registUser" parameterType="UserDTO">
+		insert into users
+		(user_id, user_password, user_name, user_address, user_phone)
+		values (#{userId}, #{userPassword}, #{userName}, #{userAddress}, #{userPhone})
+	</insert>
+	
+	<select id="loginUser" parameterType="Map" resultMap="user">
+		select * 
+		from users
+		where user_id = #{ID} and user_password = #{Password}
+	</select>
+	
+	<update id="updateUser" parameterType="UserDTO">
+		update users
+		set user_password = #{userPassword}, user_name = #{userName}, user_address = #{userAddress}, user_phone = #{userPhone}
+		where user_id = #{userId}
+	</update>
+	
+	<delete id="deleteUser" parameterType="UserDTO">
+		delete from users
+		where user_id = #{userId}
+	</delete>
+	
+	<select id="getUserInterestArea" parameterType="String" resultType="UserInterestDTO">
+		select distinct d.sidoname, d.gugunName
+		from dongCode as d
+			left join interest as i
+		on LEFT(d.dongcode, 5) = LEFT(i.dongcode, 5)
+		where i.user_id = #{id} and d.dongname is not null
+	</select>
+	
+	<select id="getUserInterestDeal" parameterType="String" resultType="UserInterestDTO">
+		select i.apartmentName, b.dealAmount, b.area, b.floor, 
+				concat(b.dealYear,'.', b.dealMonth,'.', b.dealDay) date
+		from housedeal as b 
+			left join houseinfo as i
+					on b.aptCode = i.aptCode 
+			left join houselike as l
+					on b.no = l.no
+		where l.user_id = #{id}
+	</select>
+
+</mapper>

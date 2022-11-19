@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.home.area.model.mapper.AreaMapper">
+	
+	<select id="getSido" resultType="Map">
+		select sidoName, left(dongCode, 2) sidocode
+		from dongCode
+		where right(dongcode, 8) = '00000000'
+	</select>
+	
+	<select id="getGugun" parameterType="String" resultType="Map">
+		select  d.gugunName, left(d.dongCode, 4) guguncode, ifnull(i.interest_no, -1) interest_no
+		from dongcode as d 
+				left join interest as i 
+		on d.dongcode = i.dongcode
+		where right(d.dongcode,5) = '00000' 
+				and left(d.dongcode,2) = #{code}
+				and d.gugunname is not null
+	</select>
+	
+	<select id="getDong" parameterType="String" resultType="Map">
+		select d.dongcode, d.dongName, ifnull(i.interest_no, -1) interest_no
+		from dongCode as d
+				left join interest as i 
+		on LEFT(d.dongcode, 5) = LEFT(i.dongcode, 5)
+		where left(d.dongcode,4) = #{code} and d.dongname is not null
+		order by i.interest_no
+	</select>
+	
+	<insert id="addInterestArea" parameterType="AreaLikeDTO">
+		insert into interest(user_id, dongCode, register_time, ip_address)
+		values(#{user_id}, #{dongCode}, now(), #{ip_address})
+	</insert>
+	
+	<delete id="deleteInterestArea" parameterType="Map">
+		delete from interest
+		where user_id = #{user_id} and dongCode = #{dongCode}
+	</delete>
+
+</mapper>
