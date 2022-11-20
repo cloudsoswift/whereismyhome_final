@@ -77,10 +77,10 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-8">
+                <div class="col-12">
                     <!-- Kakao Map start -->
                     <div class="mt-3 p-0 text-center">
-                    <h3>매매 위치</h3>
+                        <h3>매매 위치</h3>
                     </div>
                     <apart-map :addr="addr"></apart-map>
                     <!-- Kakao Map end -->

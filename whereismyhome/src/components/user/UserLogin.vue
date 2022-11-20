@@ -36,7 +36,7 @@
                             </div>
                         </div>
                         <div class="text-center mt-3">
-                            <button id="btn btn-outline-primary" @click="Login">Login</button>
+                            <button class="btn btn-outline-primary" @click="Login">Login</button>
                         </div>
                     </div>
                 </div>

@@ -1,35 +1,33 @@
 <template>
     <header id="header" class="fixed-top">
-        <div class="container d-flex align-items-center justify-content-between">
+        <b-container class="d-flex align-items-center justify-content-between">
             <h1 class="logo">
-            <a href="/index">Homes</a>
+            <b-navbar-brand href="/index">Homes</b-navbar-brand>
             </h1>
             <!-- Uncomment below if you prefer to use an image logo -->
             <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
 
-            <nav id="navbar" class="navbar w-100">
-            <ul class="navbar-left">
-                <li><router-link class="nav-link scrollto" :to="{ name: 'index'}">Home</router-link></li>
-                <li><router-link class="nav-link scrollto" :to="{ name: 'index'}">News</router-link></li>
-                <li><router-link class="nav-link scrollto" :to="{ name: 'qna'}">Qna</router-link></li>
-                <li><router-link class="nav-link scrollto" :to="{ name: 'board'}">Board</router-link></li>
-                <li><router-link class="nav-link scrollto" :to="{ name: 'apart'}" v-if="isLogin">Find</router-link></li>
-            </ul>
-            <ul class="navbar-right" v-if="!isLogin">
-                <li><router-link class="nav-link scrollto" :to="{ name: 'join'}">SignUp</router-link></li>
-                <li><router-link class="nav-link scrollto" :to="{ name: 'login'}">Login</router-link></li>
-            </ul>
-            <ul class="navbar-right" v-else>
-                <li><router-link class="nav-link scrollto" :to="{ name: 'mypage'}">MyPage</router-link></li>
-                <li>
-                    <a href="#" class="nav-link scrollto" @click="Logout()">Logout</a>
-                </li>
-                <li style="color: #e43c5c; font-weight: 700">{{userInfo.userId}}({{userInfo.userName}})</li>
-            </ul>
-            <i class="bi bi-list mobile-nav-toggle navbar-right"></i>
-            </nav>
+            <b-navbar id="navbar" class="w-100">
+                <b-navbar-nav>
+                    <b-nav-item :to="{ name: 'index'}">Home</b-nav-item>
+                    <b-nav-item :to="{ name: 'index'}">News</b-nav-item>
+                    <b-nav-item :to="{ name: 'qna'}">Qna</b-nav-item>
+                    <b-nav-item :to="{ name: 'board'}">Board</b-nav-item>
+                    <b-nav-item :to="{ name: 'apart'}" v-if="isLogin">Find</b-nav-item>
+                </b-navbar-nav>
+                <b-navbar-nav class="ms-auto" v-if="!isLogin">
+                    <b-nav-item :to="{ name: 'join'}">SignUp</b-nav-item>
+                    <b-nav-item :to="{ name: 'login'}">Login</b-nav-item>
+                </b-navbar-nav>
+                <b-navbar-nav class="ms-auto" v-else>
+                    <b-nav-item :to="{ name: 'mypage'}">MyPage</b-nav-item>
+                    <b-nav-item href="#" class="nav-link scrollto" @click="Logout()">Logout</b-nav-item >
+                    <b-nav-text style="color: #e43c5c; font-weight: 700">{{userInfo.userId}}({{userInfo.userName}})</b-nav-text>
+                </b-navbar-nav>
+                <i class="bi bi-list mobile-nav-toggle navbar-right"></i>
+            </b-navbar>
             <!-- .navbar -->
-        </div>
+        </b-container>
     </header>
 </template>
 
