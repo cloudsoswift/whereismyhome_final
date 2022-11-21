@@ -11,7 +11,7 @@
 	</select>
 	
 	<select id="getGugun" parameterType="String" resultType="Map">
-		select  d.gugunName, left(d.dongCode, 4) guguncode, ifnull(i.interest_no, -1) interest_no
+		select  d.gugunName, left(d.dongCode, 5) guguncode, ifnull(i.interest_no, -1) interest_no
 		from dongcode as d 
 				left join interest as i 
 		on d.dongcode = i.dongcode
@@ -25,7 +25,7 @@
 		from dongCode as d
 				left join interest as i 
 		on LEFT(d.dongcode, 5) = LEFT(i.dongcode, 5)
-		where left(d.dongcode,4) = #{code} and d.dongname is not null
+		where left(d.dongcode, 5) = #{code} and d.dongname is not null
 		order by i.interest_no
 	</select>
 	

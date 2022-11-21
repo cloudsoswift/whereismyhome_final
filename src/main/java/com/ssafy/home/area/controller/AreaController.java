@@ -93,7 +93,7 @@ public class AreaController extends HttpServlet {
 		if(user != null) {
 			AreaLikeDTO areaLikeDTO = new AreaLikeDTO();
 			areaLikeDTO.setUser_id(user.getUserId());
-			areaLikeDTO.setDongCode(dongCode + "000000");
+			areaLikeDTO.setDongCode(dongCode + "00000");
 			areaLikeDTO.setIp_address(req.getHeader("X-FORWARDED-FOR"));
 			try {
 				service.addInterestArea(areaLikeDTO);
@@ -113,7 +113,7 @@ public class AreaController extends HttpServlet {
 		if(user != null) {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("user_id", user.getUserId());
-			map.put("dongCode", dongCode + "000000");
+			map.put("dongCode", dongCode + "00000");
 			try {
 				service.deleteInterestArea(map);
 				System.out.println("관심지역 삭제 완료");
