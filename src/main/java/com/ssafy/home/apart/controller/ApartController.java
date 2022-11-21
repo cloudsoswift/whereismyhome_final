@@ -50,22 +50,38 @@ public class ApartController extends HttpServlet {
 		return "apart/aptlist";
 	}
 	
-	@GetMapping("/list/{dongCode}/{year}/{month}")
+	@GetMapping("/list/{dongCode}")
 	@ResponseBody
-	public ResponseEntity<?> search(@PathVariable String dongCode, @PathVariable String year, @PathVariable String month) {
+	public ResponseEntity<?> search(@PathVariable String dongCode) {
 		Map<String, String> map = new HashMap<String, String>();
 		List<HouseDTO> list = new ArrayList<HouseDTO>();
-		map.put("code", dongCode.substring(0, 5));
-		map.put("year", year);
-		map.put("month", month);
+		map.put("code", dongCode);
 		try {
 			list = service.searchApart(map);
 			System.out.println(list);
 			if(list != null) {
-//				for(HouseDTO dto : list) {
-//					System.out.println(dto);
-//				}
 				return new ResponseEntity<List<HouseDTO>>(list, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return exceptionHandling(e);
+		}
+	}
+	
+	@GetMapping("/list/{aptCode}/{area:.+}")
+	@ResponseBody
+	public ResponseEntity<?> searchDeal(@PathVariable String aptCode, @PathVariable String area) {
+		Map<String, String> map = new HashMap<String, String>();
+		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+		map.put("aptCode", aptCode);
+		map.put("area", area);
+		try {
+			list = service.searchDeal(map);
+			System.out.println(list);
+			if(list != null) {
+				return new ResponseEntity<List<Map<String, String>>>(list, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 			}

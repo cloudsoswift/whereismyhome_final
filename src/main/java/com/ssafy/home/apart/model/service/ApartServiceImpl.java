@@ -20,6 +20,11 @@ public class ApartServiceImpl implements ApartService {
 	public ArrayList<HouseDTO> searchApart(Map map) throws Exception {
 		return apartMapper.searchApart(map);
 	}
+	
+	@Override
+	public ArrayList<Map<String, String>> searchDeal(Map map) throws Exception {
+		return apartMapper.searchDeal(map);
+	}
 
 	@Override
 	public void addInterestApart(HouseLikeDTO apartDTO) throws Exception {

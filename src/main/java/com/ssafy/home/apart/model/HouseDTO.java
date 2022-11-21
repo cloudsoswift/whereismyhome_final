@@ -4,6 +4,7 @@ public class HouseDTO {
 	private String aptCode;
 	private String apartmentName;
 	private String dealAmount;
+	private String roadName;
 	private String area;
 	private String floor;
 	private String date;
@@ -12,6 +13,12 @@ public class HouseDTO {
 	private String like_id;
 	private String no;
 	
+	public String getRoadName() {
+		return roadName;
+	}
+	public void setRoadName(String roadName) {
+		this.roadName = roadName;
+	}
 	public String getLng() {
 		return lng;
 	}
