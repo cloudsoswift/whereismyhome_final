@@ -23,9 +23,10 @@
 	</select>
 	
 	<select id="searchArea" parameterType="String" resultType="String">
-		select DISTINCT area,
+		select DISTINCT area
 		from housedeal
 		where aptCode = #{aptCode}
+		order by area
 	</select>
 
 	<insert id="addInterestApart" parameterType="HouseLikeDTO">

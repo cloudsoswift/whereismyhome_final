@@ -22,10 +22,10 @@
                     <div class="mt-3 p-0 text-center">
                         <h3>매매 위치</h3>
                     </div>
-                    <b-card class="ms-2 my-2 w-100 h-100" 
+                    <b-card class="ms-2 my-2 w-100 h-100 shadow rounded-4" 
                     style="position: absolute; z-index: 8; max-height: 676px; max-width: 300px"
                     title="매물 검색">
-                        <b-tabs v-model="tabIndex">
+                        <b-tabs v-model="tabIndex" no-nav-style no-key-nav>
                             <b-tab>
                                 <b-list-group style="max-height: 600px; overflow-y: scroll;">
                                     <div class="accordion" v-for="(item, index) in sidos" :key="index" >
@@ -81,12 +81,14 @@ export default {
     name: 'ApartList',
     data() {
         return {
+            // 동코드 저장요
             sido:"",
             gugun:"",
             dong:"",
-            year:"",
-            month:"",
-            isHidden: true,
+            // 지도 위치이동을 위한 텍스트
+            sidoText:"",
+            gugunText:"",
+            dongText:"",
             addr:"",
             tabIndex: 0,
         };
@@ -112,12 +114,15 @@ export default {
             this.gugun = "";
             this.CLEAR_GUGUN_LIST();
             this.sido = event.target.value;
+            this.sidoText = event.target.innerText;
             this.getGugun(event.target.value);
         },
         dongSearch(event){
+            console.log(event.target.innerText)
             this.dong = "";
             this.CLEAR_DONG_LIST();
             this.gugun = event.target.value;
+            this.gugunText = event.target.innerText;
             this.getDong(event.target.value);
         },
         searchAptList(event){
@@ -128,17 +133,18 @@ export default {
             // 서버로 보낼 데이터
             this.CLEAR_APT_LIST();
             this.dong = event.target.value;
+            this.dongText = event.target.innerText;
             let param = {
                 addr: this.dong,
             }
-            // this.addr =
-            //     sidoSel.textContent +
-            //     " " +
-            //     gugunSel.textContent +
-            //     " " +
-            //     dongSel.textContent;
-            this.getHouseList(param).then((response)=>{
-                console.log(response);
+            this.addr =
+                this.sidoText +
+                " " +
+                this.gugunText +
+                " " +
+                this.dongText;
+            this.getHouseList(param).then(()=>{
+                this.tabIndex = 1;
             });
         },
         goCenter(lat, lng){

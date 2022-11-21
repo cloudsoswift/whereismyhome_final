@@ -12,6 +12,7 @@ export default {
     data() {
         return {
             map: null,
+            markerList: [],
         };
     },
 
@@ -76,7 +77,6 @@ export default {
                 position: myLatLng,
                 image: markerImage, // 마커이미지 설정
             });
-
             if (message) {
                 var iwContent = `
                 <li class="list-group-item mb-1">
@@ -87,21 +87,22 @@ export default {
                         <p class="m-0 text-muted">면적: ${message.area}</p>
                         <p class="m-0 text-muted">층: ${message.date}</p>
                         <p class="card-text">${message.date}</p>
-                    </div>
-                    </div>
-                </li>
-                `, // 인포윈도우에 표시할 내용
-                iwRemoveable = true;
-
-                // 인포윈도우를 생성합니다
-                var infowindow = new kakao.maps.InfoWindow({
-                content: iwContent,
-                removable: iwRemoveable,
-                });
-            }
-
-            // 마커에 마우스오버 이벤트를 등록합니다
-            kakao.maps.event.addListener(marker, "mouseover", () => {
+                        </div>
+                        </div>
+                        </li>
+                    `, // 인포윈도우에 표시할 내용
+                    iwRemoveable = true;
+                    
+                    // 인포윈도우를 생성합니다
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: iwContent,
+                        removable: iwRemoveable,
+                    });
+                }
+                
+                this.markerList.push(marker);
+                // 마커에 마우스오버 이벤트를 등록합니다
+                kakao.maps.event.addListener(marker, "mouseover", () => {
                 // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
                 infowindow.open(this.map, marker);
             });
@@ -113,6 +114,7 @@ export default {
             });
         },
         mapMarker(address, data) {
+            this.hideMarker();
             // 주소-좌표 변환 객체를 생성합니다
             var geocoder = new kakao.maps.services.Geocoder();
             // 마커 이미지의 이미지 주소입니다
@@ -138,6 +140,12 @@ export default {
         goCenter(lat, lng) {
             var myLatLng = new kakao.maps.LatLng(lng, lat);
             this.map.setCenter(myLatLng);
+        },
+        hideMarker() {
+            for(let i=0; i < this.markerList.length; i++){
+                this.markerList[i].setMap(null);
+            }
+            this.markerList = [];
         }
     },
     computed: {
