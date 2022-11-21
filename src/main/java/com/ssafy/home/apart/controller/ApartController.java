@@ -91,6 +91,25 @@ public class ApartController extends HttpServlet {
 		}
 	}
 	
+	@GetMapping("/list/{aptCode}")
+	@ResponseBody
+	public ResponseEntity<?> searchArea(@PathVariable String aptCode) {
+		List<String> list = new ArrayList<String>();
+
+		try {
+			list = service.searchArea(aptCode);
+			System.out.println(list);
+			if(list != null) {
+				return new ResponseEntity<List<String>>(list, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return exceptionHandling(e);
+		}
+	}
+	
 	@PostMapping("/like/{no}")
 	@ResponseBody
 	public ResponseEntity<?> addInterestApart(@PathVariable String no, HttpSession session, HttpServletRequest req) {

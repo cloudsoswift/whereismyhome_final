@@ -22,7 +22,7 @@
 		where d.aptCode = #{aptCode} and d.area = #{area}
 	</select>
 	
-	<select id="searchArea" parameterType="String" resultType="List">
+	<select id="searchArea" parameterType="String" resultType="String">
 		select DISTINCT area,
 		from housedeal
 		where aptCode = #{aptCode}
