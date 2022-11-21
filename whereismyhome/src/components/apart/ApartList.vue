@@ -120,22 +120,23 @@ export default {
             this.gugun = event.target.value;
             this.getDong(event.target.value);
         },
-        searchAptList(){
-            let sidoSel = document.querySelector("#sido");
-            let gugunSel = document.querySelector("#gugun");
-            let dongSel = document.querySelector("#dong");
+        searchAptList(event){
+            // let sidoSel = document.querySelector("#sido");
+            // let gugunSel = document.querySelector("#gugun");
+            // let dongSel = document.querySelector("#dong");
 
             // 서버로 보낼 데이터
             this.CLEAR_APT_LIST();
+            this.dong = event.target.value;
             let param = {
                 addr: this.dong,
             }
-            this.addr =
-                sidoSel[sidoSel.selectedIndex].textContent +
-                " " +
-                gugunSel[gugunSel.selectedIndex].textContent +
-                " " +
-                dongSel[dongSel.selectedIndex].textContent;
+            // this.addr =
+            //     sidoSel.textContent +
+            //     " " +
+            //     gugunSel.textContent +
+            //     " " +
+            //     dongSel.textContent;
             this.getHouseList(param).then((response)=>{
                 console.log(response);
             });

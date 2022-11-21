@@ -102,8 +102,9 @@ export default new Vuex.Store({
     },
     getHouseList({ commit }, input) {
       http
-        .get(`/apart/list/${input.addr}/${input.year}/${input.month}`)
+        .get(`/apart/list/${input.addr}`)
         .then(({ data }) => {
+          console.log(data);
           commit("SET_HOUSE_LIST", data);
         })
         .catch((error) => {
