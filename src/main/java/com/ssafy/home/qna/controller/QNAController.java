@@ -50,8 +50,8 @@ public class QNAController {
 	/*--------------------------------------QNA 관련------------------------------------*/
 
 	// 글 목록 가져오기
-	@GetMapping("/")
-	public ResponseEntity<?> listQna(int idx) throws Exception {
+	@GetMapping("/{idx}")
+	public ResponseEntity<?> listQna(@PathVariable int idx) throws Exception {
 		List<QNADTO> list = qnaService.listQNA(idx);
 
 		try {
@@ -69,12 +69,11 @@ public class QNAController {
 	@PostMapping("/write")
 	public ResponseEntity<?> writeQna(@RequestBody QNADTO qna, HttpSession session) {
 		UserDTO user = (UserDTO) session.getAttribute("userInfo");
-		if(user != null) {
+		if (user != null) {
 			qna.setUserId(user.getUserId());
 			try {
 				int cnt = qnaService.writeArticle(qna);
-				if(cnt == 1)
-				{
+				if (cnt == 1) {
 					return new ResponseEntity<String>("/qna/", HttpStatus.OK);
 				} else {
 					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
@@ -89,16 +88,16 @@ public class QNAController {
 
 	// QNA 댓글 등록 요청
 	@PostMapping("/{qna}/write")
-	public ResponseEntity<?> writeComment(@PathVariable("qna") int id, @RequestBody CommentDTO comment, HttpSession session) {
+	public ResponseEntity<?> writeComment(@PathVariable("qna") int id, @RequestBody CommentDTO comment,
+			HttpSession session) {
 		UserDTO user = (UserDTO) session.getAttribute("userInfo");
-		
-		if(user != null) {
+
+		if (user != null) {
 			comment.setUserId(user.getUserId());
 			comment.setQnaNo(id);
 			try {
 				int cnt = commentService.writeComment(comment);
-				if(cnt == 1)
-				{
+				if (cnt == 1) {
 					return new ResponseEntity<String>("/qna/", HttpStatus.OK);
 				} else {
 					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
@@ -150,8 +149,7 @@ public class QNAController {
 		dto.setQNANo(id);
 		try {
 			int cnt = qnaService.deleteArticle(dto);
-			if(cnt == 1)
-			{
+			if (cnt == 1) {
 				return new ResponseEntity<String>("/qna/", HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
@@ -164,14 +162,14 @@ public class QNAController {
 
 	// QNA 댓글 삭제
 	@DeleteMapping("/{qna}/{comment}")
-	public ResponseEntity<?> deleteComment(@PathVariable("qna") Integer qnaNo, @PathVariable("comment") Integer commentNo) {
+	public ResponseEntity<?> deleteComment(@PathVariable("qna") Integer qnaNo,
+			@PathVariable("comment") Integer commentNo) {
 		CommentDTO dto = new CommentDTO();
 		dto.setQnaNo(qnaNo);
 		dto.setCommentNo(commentNo);
 		try {
 			int cnt = commentService.deleteComment(dto);
-			if(cnt == 1)
-			{
+			if (cnt == 1) {
 				return new ResponseEntity<String>("/qna/", HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
@@ -189,8 +187,7 @@ public class QNAController {
 		try {
 			dto.setQNANo(qnaNo);
 			int cnt = qnaService.updateArticle(dto);
-			if(cnt == 1)
-			{
+			if (cnt == 1) {
 				return new ResponseEntity<Void>(HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
@@ -203,14 +200,14 @@ public class QNAController {
 
 	// QNA 댓글 내용 수정 요청
 	@PutMapping("/modify/{qna}/{comment}")
-	public ResponseEntity<?> updateComment(@PathVariable("qna") Integer qnaNo, @PathVariable("comment") Integer commentNo, @RequestBody CommentDTO dto) {
+	public ResponseEntity<?> updateComment(@PathVariable("qna") Integer qnaNo,
+			@PathVariable("comment") Integer commentNo, @RequestBody CommentDTO dto) {
 		System.out.println(dto);
 		try {
 			dto.setQnaNo(qnaNo);
 			dto.setCommentNo(commentNo);
 			int cnt = commentService.updateComment(dto);
-			if(cnt == 1)
-			{
+			if (cnt == 1) {
 				return new ResponseEntity<Void>(HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
@@ -225,50 +222,53 @@ public class QNAController {
 		return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	//	// QNA 글 내용 보기
-	//	@GetMapping("/{id}")
-	//	public String viewQNA(@PathVariable Integer id, Model model) {
-	//		try {
-	//			QNADTO dto = service.viewArticle(id);
-	//			model.addAttribute("qna", dto);
-	//			return "/qna/view";
-	//		} catch (Exception e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//			model.addAttribute("msg", "글 읽기중 에러");
-	//			return "error/error";
-	//		}
-	//	}
+	// // QNA 글 내용 보기
+	// @GetMapping("/{id}")
+	// public String viewQNA(@PathVariable Integer id, Model model) {
+	// try {
+	// QNADTO dto = service.viewArticle(id);
+	// model.addAttribute("qna", dto);
+	// return "/qna/view";
+	// } catch (Exception e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// model.addAttribute("msg", "글 읽기중 에러");
+	// return "error/error";
+	// }
+	// }
 
-	//	// 글 쓰기
-	//	@PostMapping("/write")
-	//	public ResponseEntity<String> writeQna(@RequestBody QNADTO qna) throws Exception {
-	//		if (service.writeArticle(qna)) {
-	//			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-	//		}
-	//		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
-	//	}
+	// // 글 쓰기
+	// @PostMapping("/write")
+	// public ResponseEntity<String> writeQna(@RequestBody QNADTO qna) throws
+	// Exception {
+	// if (service.writeArticle(qna)) {
+	// return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	// }
+	// return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+	// }
 
-	//	// 글 삭제
-	//	@DeleteMapping("/{QNAno}")
-	//	public ResponseEntity<String> deleteArticle(@PathVariable("QNAno") int QNAno) throws Exception {
-	//		QNADTO dto = new QNADTO();
-	//		dto.setQNANo(QNAno);
+	// // 글 삭제
+	// @DeleteMapping("/{QNAno}")
+	// public ResponseEntity<String> deleteArticle(@PathVariable("QNAno") int QNAno)
+	// throws Exception {
+	// QNADTO dto = new QNADTO();
+	// dto.setQNANo(QNAno);
 	//
-	//		if (service.deleteArticle(dto)) {
-	//			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-	//		}
-	//		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
-	//	}
+	// if (service.deleteArticle(dto)) {
+	// return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	// }
+	// return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+	// }
 
-	//	// 글 수정
-	//	@PutMapping
-	//	public ResponseEntity<String> modifyArticle(@RequestBody QNADTO dto) throws Exception {
-	//		logger.info("modifyArticle - 호출 {}", dto);
+	// // 글 수정
+	// @PutMapping
+	// public ResponseEntity<String> modifyArticle(@RequestBody QNADTO dto) throws
+	// Exception {
+	// logger.info("modifyArticle - 호출 {}", dto);
 	//
-	//		if (service.updateArticle(dto)) {
-	//			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-	//		}
-	//		return new ResponseEntity<String>(FAIL, HttpStatus.OK);
-	//	}
+	// if (service.updateArticle(dto)) {
+	// return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	// }
+	// return new ResponseEntity<String>(FAIL, HttpStatus.OK);
+	// }
 }
