@@ -19,8 +19,8 @@ public class QNAServiceImpl implements QNAService {
 	}
 
 	@Override
-	public ArrayList<QNADTO> listQNA() throws Exception {
-		return mapper.listQNA();
+	public ArrayList<QNADTO> listQNA(int idx) throws Exception {
+		return mapper.listQNA(idx);
 	}
 	@Override
 	public int writeArticle(QNADTO dto) throws Exception {

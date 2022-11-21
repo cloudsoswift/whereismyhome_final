@@ -9,7 +9,7 @@ import com.ssafy.home.qna.model.QNADTO;
 
 @Mapper
 public interface QNAMapper {
-	ArrayList<QNADTO> listQNA() throws SQLException;
+	ArrayList<QNADTO> listQNA(int idx) throws SQLException;
 
 	int writeArticle(QNADTO dto) throws SQLException;
 

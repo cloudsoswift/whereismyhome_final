@@ -51,8 +51,8 @@ public class QNAController {
 
 	// 글 목록 가져오기
 	@GetMapping("/")
-	public ResponseEntity<?> listQna() throws Exception {
-		List<QNADTO> list = qnaService.listQNA();
+	public ResponseEntity<?> listQna(int idx) throws Exception {
+		List<QNADTO> list = qnaService.listQNA(idx);
 
 		try {
 			if (list != null)

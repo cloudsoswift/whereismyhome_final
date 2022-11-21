@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.ssafy.home.qna.model.QNADTO;
 
 public interface QNAService {
-	ArrayList<QNADTO> listQNA() throws Exception;
+	ArrayList<QNADTO> listQNA(int idx) throws Exception;
 
 	int writeArticle(QNADTO dto) throws Exception;
 
