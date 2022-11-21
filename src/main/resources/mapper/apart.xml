@@ -5,23 +5,33 @@
 <mapper namespace="com.ssafy.home.apart.model.mapper.ApartMapper">
 
 	<select id="searchApart" parameterType="Map" resultType="HouseDTO">
-		select i.aptCode, i.apartmentName, b.dealAmount, b.area, b.floor, 
-				concat(b.dealYear,'.', b.dealMonth,'.', b.dealDay) date, 
-				i.lng, i.lat, ifnull(l.like_id,  -1) like_id, b.no
-		from housedeal as b left join houseinfo as i
-		on b.aptCode = i.aptCode left join houselike as l
-		on b.no = l.no
-		where left(i.aptCode, 5) = #{code} and b.dealYear = #{year} and b.dealMonth = #{month} 
-		order by l.like_id DESC
+		select i.aptCode, i.apartmentName, max(d.dealAmount) dealAmount,
+		i.roadName, i.lng,
+		i.lat, d.area, d.floor,
+		concat(d.dealYear,'.', d.dealMonth,'.', d.dealDay) date, d.no
+		from houseinfo i join housedeal d
+		on i.aptCode = d.aptCode
+		where i.dongCode = #{code}
+		group by aptCode;
+	</select>
+
+	<select id="searchDeal" parameterType="Map" resultType="Map">
+		select DISTINCT d.dealAmount,
+		concat(d.dealYear,'.', d.dealMonth,'.', d.dealDay) date
+		from housedeal d
+		where d.aptCode = #{aptCode} and d.area = #{area}
 	</select>
 
 	<insert id="addInterestApart" parameterType="HouseLikeDTO">
-		insert into houselike (user_id, no, register_time, ip_address)
-		values(#{user_id}, #{no}, now(), #{ip_address})
+		insert into
+		houselike (user_id, no, register_time, ip_address)
+		values(#{user_id},
+		#{no}, now(), #{ip_address})
 	</insert>
-	
+
 	<delete id="deleteInterestApart" parameterType="Map">
-		delete from houselike
+		delete from
+		houselike
 		where user_id = #{user_id} and no = #{no}
 	</delete>
 
