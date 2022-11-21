@@ -10,7 +10,7 @@ import com.ssafy.home.apart.model.HouseLikeDTO;
 public interface ApartService {
 	ArrayList<HouseDTO> searchApart(Map map) throws Exception;
 	ArrayList<Map<String, String>> searchDeal(Map map) throws Exception;
-	void addInterestApart(HouseLikeDTO apartDTO) throws Exception;
-	
+	ArrayList<String> searchArea(String aptCode) throws Exception;
+	void addInterestApart(HouseLikeDTO apartDTO) throws Exception;	
 	void deleteInterestApart(Map map) throws Exception;
 }

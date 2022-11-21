@@ -11,6 +11,7 @@ import com.ssafy.home.apart.model.HouseDTO;
 public interface ApartMapper {
 	ArrayList<HouseDTO> searchApart(Map map) throws SQLException;
 	ArrayList<Map<String, String>> searchDeal(Map map) throws SQLException;
+	ArrayList<String> searchArea(String aptCode) throws SQLException;
 	void addInterestApart(HouseLikeDTO apartDTO) throws SQLException;
 	void deleteInterestApart(Map map) throws SQLException;
 }

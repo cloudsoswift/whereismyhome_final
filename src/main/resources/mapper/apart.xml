@@ -21,6 +21,12 @@
 		from housedeal d
 		where d.aptCode = #{aptCode} and d.area = #{area}
 	</select>
+	
+	<select id="searchArea" parameterType="String" resultType="List">
+		select DISTINCT area,
+		from housedeal
+		where aptCode = #{aptCode}
+	</select>
 
 	<insert id="addInterestApart" parameterType="HouseLikeDTO">
 		insert into

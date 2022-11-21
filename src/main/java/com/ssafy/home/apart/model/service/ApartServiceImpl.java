@@ -25,6 +25,10 @@ public class ApartServiceImpl implements ApartService {
 	public ArrayList<Map<String, String>> searchDeal(Map map) throws Exception {
 		return apartMapper.searchDeal(map);
 	}
+	
+	public ArrayList<String> searchArea(String aptCode) throws Exception {
+		return apartMapper.searchArea(aptCode);
+	}
 
 	@Override
 	public void addInterestApart(HouseLikeDTO apartDTO) throws Exception {
