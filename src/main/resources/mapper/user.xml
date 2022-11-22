@@ -25,7 +25,7 @@
 	</select> -->
 	
 	<select id="login" parameterType="UserDTO" resultMap="user">
-		select *
+		select user_id, user_name, user_address, user_phone
 		from users
 		where user_id = #{userId} and user_password = #{userPassword}
 	</select>

@@ -13,6 +13,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ssafy.home.UnAuthorizedException;
+import com.ssafy.home.user.model.UserDTO;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -29,16 +30,16 @@ public class JwtServiceImpl implements JwtService {
 	private static final int REFRESH_TOKEN_EXPIRE_MINUTES = 2; // 주단위
 
 	@Override
-	public <T> String createAccessToken(String key, T data) {
+	public <T> String createAccessToken(UserDTO loginUser) {
 //		return create(key, data, "access-token", 1000 * 60 * ACCESS_TOKEN_EXPIRE_MINUTES);
-		return create(key, data, "access-token", 1000 * 10 * ACCESS_TOKEN_EXPIRE_MINUTES);
+		return create(loginUser, "access-token", 1000 * 10 * ACCESS_TOKEN_EXPIRE_MINUTES);
 	}
 
 //	AccessToken에 비해 유효기간을 길게...
 	@Override
-	public <T> String createRefreshToken(String key, T data) {
+	public <T> String createRefreshToken(UserDTO loginUser) {
 //		return create(key, data, "refresh-token", 1000 * 60 * 60 * 24 * 7 * REFRESH_TOKEN_EXPIRE_MINUTES);
-		return create(key, data, "refresh-token", 1000 * 30 * ACCESS_TOKEN_EXPIRE_MINUTES);
+		return create(loginUser, "refresh-token", 1000 * 30 * ACCESS_TOKEN_EXPIRE_MINUTES);
 	}
 
 	//Token 발급
@@ -50,7 +51,7 @@ public class JwtServiceImpl implements JwtService {
 	 * jwt 토큰의 구성 : header+payload+signature
 	 */
 	@Override
-	public <T> String create(String key, T data, String subject, long expire) {
+	public <T> String create(UserDTO loginUser, String subject, long expire) {
 		String jwt = Jwts.builder()
 				// Header 설정 : 토큰의 타입, 해쉬 알고리즘 정보 세팅.
 				.setHeaderParam("typ", "JWT")
@@ -58,7 +59,10 @@ public class JwtServiceImpl implements JwtService {
 				// Payload 설정 : 유효기간(Expiration), 토큰 제목 (Subject), 데이터 (Claim) 등 정보 세팅.
 				.setExpiration(new Date(System.currentTimeMillis() + expire)) // 토큰 유효기간
 				.setSubject(subject) // 토큰 제목 설정 ex) access-token, refresh-token
-				.claim(key, data) // 저장할 데이터
+				.claim("userid", loginUser.getUserId()) // 저장할 데이터
+				.claim("username", loginUser.getUserName())
+				.claim("useraddress", loginUser.getUserAddress())
+				.claim("userphone", loginUser.getUserPhone())
 				// Signature 설정 : secret key를 활용한 암호화.
 				.signWith(SignatureAlgorithm.HS256, this.generateKey())
 				.compact(); // 직렬화 처리.

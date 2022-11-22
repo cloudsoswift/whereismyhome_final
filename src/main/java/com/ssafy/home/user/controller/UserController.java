@@ -78,8 +78,8 @@ public class UserController{
 		try {
 			UserDTO loginUser = userService.login(userDto);
 			if (loginUser != null) {
-				String accessToken = jwtService.createAccessToken("userid", loginUser.getUserId());// key, data
-				String refreshToken = jwtService.createRefreshToken("userid", loginUser.getUserId());// key, data
+				String accessToken = jwtService.createAccessToken(loginUser);// key, data
+				String refreshToken = jwtService.createRefreshToken(loginUser);// key, data
 				System.out.println(accessToken);
 				System.out.println(refreshToken);
 				userService.saveRefreshToken(userDto.getUserId(), refreshToken);
@@ -153,7 +153,7 @@ public class UserController{
 		logger.debug("token : {}, memberDto : {}", token, userDto);
 		if (jwtService.checkToken(token)) {
 			if (token.equals(userService.getRefreshToken(userDto.getUserId()))) {
-				String accessToken = jwtService.createAccessToken("userid", userDto.getUserId());
+				String accessToken = jwtService.createAccessToken(userDto);
 				logger.debug("token : {}", accessToken);
 				logger.debug("정상적으로 액세스토큰 재발급!!!");
 				resultMap.put("access-token", accessToken);

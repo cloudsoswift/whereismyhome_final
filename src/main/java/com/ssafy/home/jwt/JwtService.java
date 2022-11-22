@@ -2,11 +2,13 @@ package com.ssafy.home.jwt;
 
 import java.util.Map;
 
+import com.ssafy.home.user.model.UserDTO;
+
 public interface JwtService {
 
-	<T> String createAccessToken(String key, T data);
-	<T> String createRefreshToken(String key, T data);
-	<T> String create(String key, T data, String subject, long expir);
+	<T> String createAccessToken(UserDTO loginUser);
+	<T> String createRefreshToken(UserDTO loginUser);
+	<T> String create(UserDTO loginUser, String subject, long expir);
 	Map<String, Object> get(String key);
 	String getUserId();
 	boolean checkToken(String jwt);
