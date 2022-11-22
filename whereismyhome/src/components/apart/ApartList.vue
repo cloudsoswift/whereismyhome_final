@@ -25,6 +25,9 @@
                     <b-card class="ms-2 my-2 w-100 h-100 shadow rounded-4" 
                     style="position: absolute; z-index: 8; max-height: 676px; max-width: 300px"
                     title="매물 검색">
+                        <button class="btn p-1 px-2 back-button" @click="goBack" v-if="tabIndex > 0">
+                            <font-awesome-icon icon="fa-solid fa-arrow-left" />
+                        </button>
                         <b-tabs v-model="tabIndex" no-nav-style no-key-nav>
                             <b-tab>
                                 <b-list-group style="max-height: 600px; overflow-y: scroll;">
@@ -76,6 +79,7 @@ import { mapState, mapActions, mapMutations } from "vuex";
 import ApartMap from "@/components/apart/ApartMap.vue";
 import http from "@/util/http";
 import ApartInfoList from "@/components/apart/ApartInfoList.vue";
+import parser from "@/util/jwtParser";
 export default {
     components: { ApartMap, ApartInfoList },
     name: 'ApartList',
@@ -105,11 +109,15 @@ export default {
         this.CLEAR_DONG_LIST();
         this.CLEAR_APT_LIST();
         this.getSido();
+        console.log(parser("eyJ0eXAiOiJKV1QiLCJyZWdEYXRlIjoxNjY5MTA0ODYwOTI0LCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NjkxMDQ4NzAsInN1YiI6ImFjY2Vzcy10b2tlbiIsInVzZXJpZCI6InNzYWZ5IiwidXNlcm5hbWUiOiLsnbTssL3rr7wiLCJ1c2VyYWRkcmVzcyI6ImNtbGVlMDkxM0BuYXZlci5jb20iLCJ1c2VycGhvbmUiOiIwMTA5NjY4MzkzNiJ9.3dQma56K_bBU6wIIy04hRBUDAYZfi-c_VEY4ti2nKaw"));
     },
 
     methods: {
         ...mapActions(["getSido", "getGugun", "getDong", "getHouseList"]),
         ...mapMutations(["CLEAR_SIDO_LIST", "CLEAR_GUGUN_LIST", "CLEAR_DONG_LIST", "CLEAR_APT_LIST"]),
+        goBack() {
+            this.tabIndex = this.tabIndex > 0 ? this.tabIndex-1 : 0;
+        },
         gugunSearch(event){
             this.gugun = "";
             this.CLEAR_GUGUN_LIST();
@@ -146,9 +154,6 @@ export default {
             this.getHouseList(param).then(()=>{
                 this.tabIndex = 1;
             });
-        },
-        goCenter(lat, lng){
-            console.log(lat, lng);
         },
         InterestArea(event) {
             const dongCode = event.target.dataset.code;
@@ -252,5 +257,10 @@ export default {
 button:has(+ .show) {
     background-color: #0d6efd;
     color: white;
+}
+.back-button {
+    position: absolute;
+    top:10px;
+    right:20px;
 }
 </style>

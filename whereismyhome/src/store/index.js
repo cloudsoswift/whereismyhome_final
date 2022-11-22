@@ -12,6 +12,8 @@ export default new Vuex.Store({
     guguns: [],
     dongs: [],
     houses: [],
+    apartCode: "",
+    centerPos: {},
     //회원정보 보관용
     user: {},
     //게시판용
@@ -64,6 +66,15 @@ export default new Vuex.Store({
     },
     CLEAR_BOARD(state) {
       state.board = [];
+    },
+    SET_APART_CODE(state, apartCode) {
+      state.apartCode = apartCode;
+    },
+    CLEAR_APART_CODE(state) {
+      state.apartCode = "";
+    },
+    SET_CENTER_POS(state, centerPos) {
+      state.centerPos = centerPos;
     },
   },
   actions: {

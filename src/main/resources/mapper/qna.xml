@@ -16,7 +16,6 @@
 		select * 
 		from qna
 		order by qna_no desc
-		limit 10 offset #{idx}
 	</select>
 	
 	<insert id="writeArticle" parameterType="QNADTO">

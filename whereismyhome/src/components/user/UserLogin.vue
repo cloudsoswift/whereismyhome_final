@@ -32,7 +32,7 @@
                             </div>
                             <div class="col-md-6 form-group mt-3 mt-md-0">
                                 <input type="Password" v-model="Password" class="form-control"
-                                    id="Password" placeholder="Your Password" required />
+                                    id="Password" placeholder="Your Password" required @keyup.enter="Login"/>
                             </div>
                         </div>
                         <div class="text-center mt-3">

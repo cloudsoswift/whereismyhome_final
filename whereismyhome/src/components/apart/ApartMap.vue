@@ -106,7 +106,7 @@ export default {
                 // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
                 infowindow.open(this.map, marker);
             });
-
+    
             // 마커에 마우스아웃 이벤트를 등록합니다
             kakao.maps.event.addListener(marker, "mouseout", function () {
                 // 마커에 마우스아웃 이벤트가 발생하면 인포윈도우를 제거합니다
@@ -127,8 +127,7 @@ export default {
             geocoder.addressSearch(address, (result, status) => {
                 // 정상적으로 검색이 완료됐으면
                 if (status === kakao.maps.services.Status.OK) {
-                var myLatLng = new kakao.maps.LatLng(result[0].y, result[0].x);
-                this.map.setCenter(myLatLng);
+                    this.goCenter(result[0].y, result[0].x);
                 }
             });
             // 매매 정보 주소를 좌표로 변환하기
@@ -137,9 +136,10 @@ export default {
             });
 
         },
-        goCenter(lat, lng) {
-            var myLatLng = new kakao.maps.LatLng(lng, lat);
+        goCenter(lat, lng, level=5) {
+            var myLatLng = new kakao.maps.LatLng(lat, lng);
             this.map.setCenter(myLatLng);
+            this.map.setLevel(level);
         },
         hideMarker() {
             for(let i=0; i < this.markerList.length; i++){
@@ -149,12 +149,15 @@ export default {
         }
     },
     computed: {
-            ...mapState(["houses"]),
+            ...mapState(["houses", "centerPos"]),
         },
     watch: {
         houses(newValue) {
             this.mapMarker(this.addr, newValue)
         },
+        centerPos(newValue){
+            this.goCenter(newValue.lat, newValue.lng, 2);
+        }
     },
 };
 </script>

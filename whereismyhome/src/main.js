@@ -8,6 +8,8 @@ import "@/util/bootstrapvue.js";
 
 Vue.config.productionTip = false;
 
+new webpack.ProvidePlugin({ process: "process/browser", Buffer: ["buffer", "Buffer"] });
+
 new Vue({
   router,
   store,

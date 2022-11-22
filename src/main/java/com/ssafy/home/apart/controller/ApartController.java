@@ -70,7 +70,7 @@ public class ApartController extends HttpServlet {
 		}
 	}
 	
-	@GetMapping("/list/{aptCode}/{area:.+}")
+	@GetMapping("/list/{aptCode}/{area}")
 	@ResponseBody
 	public ResponseEntity<?> searchDeal(@PathVariable String aptCode, @PathVariable String area) {
 		Map<String, String> map = new HashMap<String, String>();

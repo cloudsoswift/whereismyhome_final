@@ -16,7 +16,7 @@
                         placeholder="댓글을 남겨주세요."
                         v-model="commentInput"
                         rows="3"
-                        style="resize: none;"></textarea>
+                        style="resize: none;" @keyup.enter="registerComment"></textarea>
                     </div>
                     <div class="col-md-2">
                         <button class="btn btn-outline-secondary btn-lg w-100 h-100" @click="registerComment">등록</button>

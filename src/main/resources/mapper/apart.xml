@@ -6,7 +6,9 @@
 
 	<select id="searchApart" parameterType="Map" resultType="HouseDTO">
 		select i.aptCode, i.apartmentName, max(d.dealAmount) dealAmount,
-		i.roadName, i.lng,
+		( concat(roadName, ' ', TRIM(LEADING '0' from roadNameBonbun),
+		 IF(TRIM(LEADING '0' from roadNameBubun) != '',
+		 CONCAT('-' , TRIM(LEADING '0' from roadNameBubun)), ''))) roadName, i.lng,
 		i.lat, d.area, d.floor,
 		concat(d.dealYear,'.', d.dealMonth,'.', d.dealDay) date, d.no
 		from houseinfo i join housedeal d
