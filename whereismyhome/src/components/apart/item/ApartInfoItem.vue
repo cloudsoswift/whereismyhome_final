@@ -7,7 +7,7 @@
             </b-row> 
             <b-collapse v-if="aptCode == apartCode" :id="`${aptCode}`" accordion="area">
                 <div>
-                    <b-badge v-for="(area, index) in areas" :key="index" pill class="mx-1" style="background-color: #0d6efd; text-decoration: none;" href="#" @click="loadDeal(area)">{{area}}</b-badge>
+                    <b-badge v-for="(area, index) in areas" :key="index" pill class="mx-1" style="background-color: #0d6efd; text-decoration: none;" href="#" @click="loadDeal(area)">{{area}}m²</b-badge>
                 </div>
                 <canvas id="chartplace" width="100%" height="100%" v-if="isAreaChosen"></canvas>
             </b-collapse>
@@ -51,7 +51,8 @@ export default {
             .then(({data, status})=>{
                 switch(status){
                     case 200:
-                        this.areas = data;
+                        this.areas = data.map((value)=>Math.floor(value));
+                        this.areas = this.areas.sort();
                         break;
                     case 204:
                         alert("평 데이터가 존재하지 않습니다.");
@@ -75,29 +76,32 @@ export default {
                 switch(status){
                     case 200:
                         console.log(data);
-                        if(this.myChart != undefined) 
-                            this.myChart.destroy();
-                        this.myChart = new Chart(
-                            document.getElementById('chartplace').getContext('2d'),
-                            {
-                            type: 'line',
-                            data: {
-                                labels: data.map(row => row.date.split('.')[0]),
-                                datasets: [
-                                {
-                                    label: 'Acquisitions by year',
-                                    data: data.map(row => Number(row.dealAmount.replace(',', '')))
-                                }
-                                ]
-                            },
-                            options: {
-                                tooltips: {
-                                    mode: 'label'
-                                }
-                            }
-                            }
-                        );
+                        if(data.length != 0){
 
+                            if(this.myChart != undefined) 
+                                this.myChart.destroy();
+                            this.myChart = new Chart(
+                                document.getElementById('chartplace').getContext('2d'),
+                                {
+                                type: 'line',
+                                data: {
+                                    labels: data.map(row => row.date.split('.')[0]), // 연도
+                                    datasets: [
+                                    {
+                                        label: '가격',
+                                        data: data.map(row => Number(row.dealAmount.replace(',', ''))),
+                                        fill: false,
+                                    }
+                                    ]
+                                },
+                                options: {
+                                    tooltips: {
+                                        mode: 'label'
+                                    }
+                                }
+                                }
+                            );
+                        }
                 }
             })
         }

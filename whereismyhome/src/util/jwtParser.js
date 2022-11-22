@@ -1,6 +1,7 @@
 export default function (token) {
   try {
-    return Buffer.from(token.split(".")[1], "base64");
+    var Buffer = require('buffer/').Buffer
+    return Buffer.from(token.split(".")[1], "base64").toString('utf-8');
   } catch (e) {
     return null;
   }

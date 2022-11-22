@@ -79,7 +79,6 @@ import { mapState, mapActions, mapMutations } from "vuex";
 import ApartMap from "@/components/apart/ApartMap.vue";
 import http from "@/util/http";
 import ApartInfoList from "@/components/apart/ApartInfoList.vue";
-import parser from "@/util/jwtParser";
 export default {
     components: { ApartMap, ApartInfoList },
     name: 'ApartList',
@@ -109,7 +108,6 @@ export default {
         this.CLEAR_DONG_LIST();
         this.CLEAR_APT_LIST();
         this.getSido();
-        console.log(parser("eyJ0eXAiOiJKV1QiLCJyZWdEYXRlIjoxNjY5MTA0ODYwOTI0LCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NjkxMDQ4NzAsInN1YiI6ImFjY2Vzcy10b2tlbiIsInVzZXJpZCI6InNzYWZ5IiwidXNlcm5hbWUiOiLsnbTssL3rr7wiLCJ1c2VyYWRkcmVzcyI6ImNtbGVlMDkxM0BuYXZlci5jb20iLCJ1c2VycGhvbmUiOiIwMTA5NjY4MzkzNiJ9.3dQma56K_bBU6wIIy04hRBUDAYZfi-c_VEY4ti2nKaw"));
     },
 
     methods: {

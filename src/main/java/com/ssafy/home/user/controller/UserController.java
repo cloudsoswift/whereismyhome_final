@@ -88,10 +88,10 @@ public class UserController{
 				resultMap.put("access-token", accessToken);
 				resultMap.put("refresh-token", refreshToken);
 				resultMap.put("message", SUCCESS);
-				status = HttpStatus.ACCEPTED;
+				status = HttpStatus.OK;
 			} else {
 				resultMap.put("message", FAIL);
-				status = HttpStatus.ACCEPTED;
+				status = HttpStatus.NOT_ACCEPTABLE;
 			}
 		} catch (Exception e) {
 			logger.error("로그인 실패 : {}", e);
@@ -127,12 +127,12 @@ public class UserController{
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 
-	@GetMapping("/logout/{userid}")
-	public ResponseEntity<?> removeToken(@PathVariable("userid") String userId) {
+	@GetMapping("/logout")
+	public ResponseEntity<?> removeToken() {
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = HttpStatus.ACCEPTED;
 		try {
-			userService.deleRefreshToken(userId);
+			userService.deleRefreshToken((String)jwtService.get("").get("userid"));
 			resultMap.put("message", SUCCESS);
 			status = HttpStatus.ACCEPTED;
 		} catch (Exception e) {

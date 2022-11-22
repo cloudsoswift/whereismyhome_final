@@ -21,7 +21,7 @@
                 </b-navbar-nav>
                 <b-navbar-nav class="ms-auto" v-else>
                     <b-nav-item :to="{ name: 'mypage'}">MyPage</b-nav-item>
-                    <b-nav-item href="#" class="nav-link scrollto" @click="Logout()">Logout</b-nav-item >
+                    <b-nav-item href="#" class="nav-link scrollto" @click="doLogout()">Logout</b-nav-item >
                     <b-nav-text style="color: #e43c5c; font-weight: 700">{{userInfo.userId}}({{userInfo.userName}})</b-nav-text>
                 </b-navbar-nav>
                 <i class="bi bi-list mobile-nav-toggle navbar-right"></i>
@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import http from "@/util/http";
 export default {
     name: 'TheHeaderNavBar',
 
@@ -55,12 +54,16 @@ export default {
         }
     },
     methods: {
-        Logout() {
-            
-            http.get("/user/logout")
-            .then(()=>{
-                this.$store.commit("CLEAR_USER");
-                this.$router.push("/");
+        doLogout() {
+            this.$store.dispatch('logout').then((status)=>{
+                switch(status){
+                    case 500:
+                        //INTERNAL_SERVER_ERROR
+                        alert('로그아웃 도중 에러가 발생했습니다.');
+                        break;
+                }
+                if(this.$route.name != "index")
+                    this.$router.push('/');
             })
         }  
     },

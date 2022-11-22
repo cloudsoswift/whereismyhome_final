@@ -32,11 +32,11 @@
                             </div>
                             <div class="col-md-6 form-group mt-3 mt-md-0">
                                 <input type="Password" v-model="Password" class="form-control"
-                                    id="Password" placeholder="Your Password" required @keyup.enter="Login"/>
+                                    id="Password" placeholder="Your Password" required @keyup.enter="doLogin"/>
                             </div>
                         </div>
                         <div class="text-center mt-3">
-                            <button class="btn btn-outline-primary" @click="Login">Login</button>
+                            <button class="btn btn-outline-primary" @click="doLogin">Login</button>
                         </div>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import http from "@/util/http";
+import { mapActions } from 'vuex';
 export default {
     name: 'UserLogin',
 
@@ -63,42 +63,30 @@ export default {
     },
 
     methods: {
-        Login() {
-            const options = {
-                params: {
-                    ID: this.ID,
-                    Password: this.Password,
-                },
-                withCredentials: true
+        ...mapActions(['login']),
+        doLogin() {
+            const info = {
+                userId: this.ID,
+                userPassword: this.Password,
             }
-            http.post("/user/login", {}, options)
-            .then(({data, status}) => {
+            this.login(info).then((status)=>{
                 switch(status){
                     case 200:
-                        this.$store.commit("SET_USER", { 
-                            userId: data.userId,
-                            userName: data.userName,
-                            userPhone: data.userPhone,
-                            userAddress: data.userAddress,
-                            joinDate: data.joinDate
-                         });
-                         this.$router.push("/");
-                         break;
-                    case 204:
-                        alert("ID 혹은 비밀번호가 틀렸습니다.");
-                        break;
-                    case 500:
-                        alert("로그인 중 서버 오류가 발생했습니다.");
-                        break;
+                    //HttpStatus.OK
+                    this.$router.push("/");
+                    break;
+                case 406:
+                //HttpStatus.NOT_ACCEPTABLE
+                    alert("ID 혹은 비밀번호가 틀렸습니다.");
+                    break;
+                case 500:
+                //HttpStatus.INTERNAL_SERVER_ERROR
+                    alert("로그인 중 서버 오류가 발생했습니다.");
+                    this.$router.push("/");
+                    break;
                 }
-            })
+            });
         },
-        Logout() {
-            http.get("/user/logout")
-            .then(()=>{
-                this.$store.commit("CLEAR_USER");
-            })
-        }
     },
 };
 </script>
