@@ -9,7 +9,7 @@
 		( concat(roadName, ' ', TRIM(LEADING '0' from roadNameBonbun),
 		 IF(TRIM(LEADING '0' from roadNameBubun) != '',
 		 CONCAT('-' , TRIM(LEADING '0' from roadNameBubun)), ''))) roadName, i.lng,
-		i.lat, d.area, d.floor,
+		i.lat, ROUND(d.area) area, d.floor,
 		concat(d.dealYear,'.', d.dealMonth,'.', d.dealDay) date, d.no
 		from houseinfo i join housedeal d
 		on i.aptCode = d.aptCode
@@ -21,7 +21,7 @@
 		select DISTINCT d.dealAmount,
 		concat(d.dealYear,'.', d.dealMonth,'.', d.dealDay) date
 		from housedeal d
-		where d.aptCode = #{aptCode} and d.area = #{area}
+		where d.aptCode = #{aptCode} and round(d.area) = #{area}
 	</select>
 	
 	<select id="searchArea" parameterType="String" resultType="String">
