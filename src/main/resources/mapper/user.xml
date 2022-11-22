@@ -18,10 +18,40 @@
 		values (#{userId}, #{userPassword}, #{userName}, #{userAddress}, #{userPhone})
 	</insert>
 	
-	<select id="loginUser" parameterType="Map" resultMap="user">
+	<!-- <select id="loginUser" parameterType="Map" resultMap="user">
 		select * 
-		from users
+		from user
 		where user_id = #{ID} and user_password = #{Password}
+	</select> -->
+	
+	<select id="login" parameterType="UserDTO" resultMap="user">
+		select *
+		from users
+		where user_id = #{userId} and user_password = #{userPassword}
+	</select>
+	
+	<select id="getRefreshToken" parameterType="string" resultType="string">
+		select token
+		from users
+		where user_id = #{userId}
+	</select>
+	
+	<update id="saveRefreshToken" parameterType="map">
+		update users
+		set token = #{token}
+		where user_id = #{userId}
+	</update>
+	
+	<update id="deleteRefreshToken" parameterType="map">
+		update users
+		set token = #{token, jdbcType=VARCHAR}
+		where user_id = #{userId}
+	</update>
+	
+	<select id="userInfo" parameterType="string" resultMap="user">
+		select user_name, user_id, user_address, user_phone
+		from users
+		where user_id = #{userId}
 	</select>
 	
 	<update id="updateUser" parameterType="UserDTO">

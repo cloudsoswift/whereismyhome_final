@@ -91,7 +91,7 @@ public class ApartController extends HttpServlet {
 		}
 	}
 	
-	@GetMapping("/area/{aptCode}")
+	@GetMapping("/list/{aptCode}")
 	@ResponseBody
 	public ResponseEntity<?> searchArea(@PathVariable String aptCode) {
 		List<String> list = new ArrayList<String>();

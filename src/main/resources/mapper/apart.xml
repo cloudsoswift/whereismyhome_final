@@ -23,7 +23,7 @@
 	</select>
 	
 	<select id="searchArea" parameterType="String" resultType="String">
-		select DISTINCT area
+		select DISTINCT ROUND(area)
 		from housedeal
 		where aptCode = #{aptCode}
 		order by area
