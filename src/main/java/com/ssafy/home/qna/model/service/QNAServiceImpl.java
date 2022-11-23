@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.home.BoardParameterDTO;
 import com.ssafy.home.qna.model.QNADTO;
 import com.ssafy.home.qna.model.mapper.QNAMapper;
 
@@ -19,8 +20,10 @@ public class QNAServiceImpl implements QNAService {
 	}
 
 	@Override
-	public ArrayList<QNADTO> listQNA(int idx) throws Exception {
-		return mapper.listQNA(idx);
+	public ArrayList<QNADTO> listQNA(BoardParameterDTO boardParameterDTO) throws Exception {
+		int start = boardParameterDTO.getPg() == 0 ? 0 : (boardParameterDTO.getPg() - 1) * boardParameterDTO.getSpp();
+		boardParameterDTO.setStart(start);
+		return mapper.listQNA(boardParameterDTO);
 	}
 	@Override
 	public int writeArticle(QNADTO dto) throws Exception {
@@ -38,5 +41,8 @@ public class QNAServiceImpl implements QNAService {
 	public int deleteArticle(QNADTO dto) throws Exception {
 		return mapper.deleteArticle(dto);
 	}
-
+	@Override
+	public int getTotalCount() throws Exception {
+		return mapper.getTotalCount();
+	}
 }

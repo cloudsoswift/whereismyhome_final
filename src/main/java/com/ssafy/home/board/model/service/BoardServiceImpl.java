@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.home.BoardParameterDTO;
 import com.ssafy.home.board.model.BoardDTO;
-import com.ssafy.home.board.model.BoardParameterDTO;
 import com.ssafy.home.board.model.mapper.BoardMapper;
 
 @Service
@@ -40,6 +40,10 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public int deleteArticle(BoardDTO dto) throws Exception {
 		return mapper.deleteArticle(dto);
+	}
+	@Override
+	public int getTotalCount() throws Exception {
+		return mapper.getTotalCount();
 	}
 
 }

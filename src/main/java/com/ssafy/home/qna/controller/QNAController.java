@@ -1,7 +1,9 @@
 package com.ssafy.home.qna.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.home.BoardParameterDTO;
 import com.ssafy.home.UnAuthorizedException;
 import com.ssafy.home.board.model.BoardDTO;
 import com.ssafy.home.jwt.JwtService;
@@ -55,13 +58,19 @@ public class QNAController {
 	/*--------------------------------------QNA 관련------------------------------------*/
 
 	// 글 목록 가져오기
-	@GetMapping("/page/{idx}")
-	public ResponseEntity<?> listQna(@PathVariable int idx) throws Exception {
-		List<QNADTO> list = qnaService.listQNA(idx);
-
+	@GetMapping("/page/{pg}")
+	public ResponseEntity<?> listQna(@PathVariable int pg, @RequestBody BoardParameterDTO boardParameterDTO) throws Exception {
+		boardParameterDTO.setPg(pg);
+		List<QNADTO> list = qnaService.listQNA(boardParameterDTO);
+		int pgCount = (qnaService.getTotalCount() / boardParameterDTO.getSpp()) + 1;
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("list", list);
+		map.put("pgCount", pgCount);
+		
 		try {
 			if (list != null)
-				return new ResponseEntity<List<QNADTO>>(list, HttpStatus.OK);
+				return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 			else
 				return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
 		} catch (Exception e) {

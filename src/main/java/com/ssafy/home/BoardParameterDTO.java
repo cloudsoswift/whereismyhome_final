@@ -1,21 +1,18 @@
-package com.ssafy.home.board.model;
+package com.ssafy.home;
+
 
 public class BoardParameterDTO {
 
+	//"현재 페이지 번호
 	private int pg;
-	//페이지당 글갯수")
+	//페이지당 글갯수
 	private int spp;
-	//페이지의 시작 글번호")
+	//페이지의 시작 글번호
 	private int start;
-	//검색 조건")
+	//검색 조건
 	private String key;
-	//검색어")
+	//검색어
 	private String word;
-	
-	public BoardParameterDTO() {
-		pg = 1;
-		spp = 20;
-	}
 
 	public int getPg() {
 		return pg;

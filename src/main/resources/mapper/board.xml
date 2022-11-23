@@ -12,11 +12,11 @@
 		<result column="register_time" property="registerTime"/>
 	</resultMap>
 
-	<select id="listBoard" resultMap="board">
+	<!-- <select id="listBoard" resultMap="board">
 		select * 
 		from board
 		order by board_no desc
-	</select>
+	</select> -->
 	
 	<insert id="writeArticle" parameterType="BoardDTO">
 		insert into board (user_id, subject, content)
@@ -40,7 +40,7 @@
 		where board_no = #{boardNo}
 	</update>
 	
-	<select id="listArticle" parameterType="map" resultType="boardDto">
+	<select id="listBoard" parameterType="BoardParameterDTO" resultType="boardDTO">
 		select board_no, user_id, subject, content,
 				case when date_format(register_time, '%Y%m%d') = date_format(now(), '%Y%m%d')
 				then date_format(register_time, '%H:%i:%s')
@@ -59,17 +59,9 @@
 		limit #{start}, #{spp}
 	</select>
 	
-	<select id="getTotalCount" parameterType="map" resultType="int">
+	<select id="getTotalCount" resultType="int">
 		select count(board_no)
 		from board
-		<if test="word != null and word != ''">
-			<if test="key == 'subject'">
-				where subject like concat('%', #{word}, '%')
-			</if>
-			<if test="key != 'subject'">
-				where ${key} = #{word}
-			</if>
-		</if>
 	</select>
 
 </mapper>
