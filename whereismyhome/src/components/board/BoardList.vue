@@ -18,13 +18,13 @@
                         <div class="col-md-7 offset-3">
                             <form class="d-flex" id="form-search" action="">
                                 <select class="form-select form-select-sm ms-5 me-1 w-50"
-                                    name="key" aria-label="검색조건">
+                                    name="key" aria-label="검색조건" v-model="key">
                                     <option value="" selected>검색조건</option>
                                     <option value="subject">제목</option>
                                     <option value="userid">작성자</option>
                                 </select>
                                 <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" name="word"
+                                    <input type="text" class="form-control" v-model="word"
                                         placeholder="검색어..." />
                                     <button id="btn-search" class="btn btn-dark" type="button">검색</button>
                                 </div>
@@ -52,18 +52,11 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="row">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item"><a class="page-link" href="#">이전</a></li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">4</a></li>
-                        <li class="page-item"><a class="page-link" href="#">5</a></li>
-                        <li class="page-item"><a class="page-link" href="#">다음</a></li>
-                    </ul>
-                </div>
+                <b-row class="justify-content-md-center">
+                    <b-col lg="8" md="10">
+                        <b-pagination-nav :link-gen="linkGen" :number-of-pages="10" use-router align="center"></b-pagination-nav>
+                    </b-col>
+                </b-row>
             </div>
         </section>
     </div>
@@ -76,7 +69,8 @@ export default {
 
     data() {
         return {
-
+            key: "",
+            word: "",
         };
     },
     computed:{
@@ -89,6 +83,9 @@ export default {
     
     methods: {
         ...mapActions(["getBoardList"]),
+        linkGen(pageNum) {
+            return pageNum === 1 ? '?' : `?page=${pageNum}&key=${this.key}&word=${this.word}`
+        }
     },
 };
 </script>
