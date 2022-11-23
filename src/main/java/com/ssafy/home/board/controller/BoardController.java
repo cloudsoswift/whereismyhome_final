@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.home.UnAuthorizedException;
 import com.ssafy.home.board.model.BoardDTO;
 import com.ssafy.home.board.model.service.BoardService;
 import com.ssafy.home.board.model.service.BoardServiceImpl;
@@ -61,10 +62,9 @@ public class BoardController{
 	// 게시판 글 등록 요청
 	@PostMapping("/")
 	public ResponseEntity<?> writePost(@RequestBody BoardDTO board) {
-		UserDTO user = jwtService.getUser("access-token");
-
-		if(!user.equals(null) && user.getRole() != 1) {
-			try {
+		try {
+			UserDTO user = jwtService.getUser("access-token");
+			if(!user.equals(null) && user.getRole() == 1) {
 				board.setUserId(user.getUserId());
 				int cnt = service.writeArticle(board);
 				if(cnt == 1)
@@ -73,10 +73,10 @@ public class BoardController{
 				} else {
 					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				return exceptionHandling(e);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return exceptionHandling(e);
 		}
 		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
 	}
@@ -100,12 +100,12 @@ public class BoardController{
 	// 게시판 글 삭제
 	@DeleteMapping("/{id}") // 관리자 아무나
 	public ResponseEntity<?> deletePost(@PathVariable Integer id) {
-		UserDTO user = jwtService.getUser("access-token");
-		
-		if(!user.equals(null) && user.getRole() != 1) {
-			BoardDTO dto = new BoardDTO();
-			dto.setBoardNo(id);
-			try {
+		try {
+			UserDTO user = jwtService.getUser("access-token");
+			
+			if(!user.equals(null) && user.getRole() == 1) {
+				BoardDTO dto = new BoardDTO();
+				dto.setBoardNo(id);
 				int cnt = service.deleteArticle(dto);
 				if(cnt == 1)
 				{
@@ -113,10 +113,10 @@ public class BoardController{
 				} else {
 					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				return exceptionHandling(e);
-			}
+			} 
+		}catch (Exception e) {
+			e.printStackTrace();
+			return exceptionHandling(e);
 		}
 		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
 	}
@@ -125,9 +125,9 @@ public class BoardController{
 	@PutMapping("/{id}") 
 	public ResponseEntity<?> modifyPost(@RequestBody BoardDTO dto) { // boardNo, subject, content
 		System.out.println(dto);
-		UserDTO user = jwtService.getUser("access-token");
-		if(!user.equals(null) && user.getRole() != 1) {
-			try {
+		try {
+			UserDTO user = jwtService.getUser("access-token");
+			if(!user.equals(null) && user.getRole() == 1) {
 				dto.setUserId(user.getUserId());
 				int cnt = service.updateArticle(dto);
 				if(cnt == 1)
@@ -136,15 +136,18 @@ public class BoardController{
 				} else {
 					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				return exceptionHandling(e);
-			}
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+			return exceptionHandling(e);
 		}
 		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
 	}
 
 	private ResponseEntity<String> exceptionHandling(Exception e) {
+		if(e instanceof UnAuthorizedException) {
+			return new ResponseEntity<String>("로그인 토큰 만료.",HttpStatus.UNAUTHORIZED);
+		}
 		return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

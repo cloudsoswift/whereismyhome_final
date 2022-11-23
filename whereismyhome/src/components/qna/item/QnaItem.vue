@@ -44,7 +44,7 @@ export default {
     props:['content','qnano', 'registerTime', 'subject', 'userId'],
     computed:{
         ...mapGetters(['isLogin']),
-        ...mapState(['user'])
+        ...mapState(['user', 'tokens'])
     },
     methods:{
         loadQna() {
@@ -88,7 +88,12 @@ export default {
             })
         },
         deleteQna(){
-            http.delete(`/qna/${this.qnano}`)
+            const options = {
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
+            };
+            http.delete(`/qna/${this.qnano}`, options)
             .then(({status})=>{
                 switch(status){
                     case 200:
@@ -105,6 +110,19 @@ export default {
                     alert("서버와 통신중 에러가 발생했습니다.");
                     this.$router.push("/");
                     break;
+                }
+            }).catch( async ({response})=>{
+                switch(response.status){
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        await this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
                 }
             })
         }

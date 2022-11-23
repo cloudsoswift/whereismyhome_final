@@ -73,7 +73,7 @@ export default {
                     "access-token": this.tokens.accessToken,
                 }
             };
-            http.post("/board/write", data, options)
+            http.post("/board/", data, options)
             .then(({status})=>{
                 switch(status){
                     case 200:
@@ -96,11 +96,11 @@ export default {
                     this.$router.push("/");
                     break;
                 }
-            }).catch(({response})=>{
+            }).catch(async({response})=>{
                 switch(response.status){
                     case 401:
                         //HttpStatus.UNAUTHORIZED
-                        this.$store.dispatch("tokenRefresh")
+                        await this.$store.dispatch("tokenRefresh")
                         if(!this.isLogin){
                             alert("로그인이 만료되었습니다.");
                             this.$router.push("/user/login");

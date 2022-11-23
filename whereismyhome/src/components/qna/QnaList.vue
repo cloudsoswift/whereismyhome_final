@@ -81,7 +81,7 @@ export default {
     
     methods: {
         getQnaList() {
-            http.get("/qna/")
+            http.get("/qna/page/1")
             .then(({data, status})=>{
                 switch(status){
                     case 200:

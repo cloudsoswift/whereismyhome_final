@@ -24,6 +24,9 @@ export default new Vuex.Store({
     isLogin(state) {
       return JSON.stringify(state.tokens) != "{}";
     },
+    isAdmin(state) {
+      return state.user.role == 1;
+    },
   },
   mutations: {
     // 아파트 리스트 용
@@ -134,7 +137,7 @@ export default new Vuex.Store({
     },
     getBoardList({ commit }) {
       http
-        .get("/board/")
+        .get("/board/page/1")
         .then(({ data }) => {
           // console.log(commit, response);
           commit("SET_BOARD_LIST", data);

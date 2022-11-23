@@ -228,12 +228,18 @@ export default {
                 }
             }
             )
-            .catch(({ response }) => {
+            .catch(async({ response }) => {
                 switch (response.status) {
                     case 401:
-                    //HttpStatus.UNAUTHORIZED
-                    this.$store.dispatch("tokenRefresh")
-                    break;
+                        //HttpStatus.UNAUTHORIZED
+                        await this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
                 }
             });
         },
@@ -267,7 +273,20 @@ export default {
                     this.$router.push("/");
                     break;
                 }
-            })
+            }).catch(async({ response }) => {
+                switch (response.status) {
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        await this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
+                }
+            });
         }
     },
 };

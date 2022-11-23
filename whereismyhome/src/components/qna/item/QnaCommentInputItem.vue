@@ -23,7 +23,7 @@
 
 <script>
 import http from '@/util/http';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 export default {
     name: 'QnaCommentInputItem',
     props: ['qnano'],
@@ -33,7 +33,8 @@ export default {
         };
     },
     computed: {
-        ...mapState(['user']),
+        ...mapState(['user','tokens']),
+        ...mapGetters(['isLogin']),
     },
     mounted() {
         
@@ -45,9 +46,11 @@ export default {
                 content: this.comment
             }
             const options = {
-                withCredentials: true
-            }
-            http.post(`/qna/${this.qnano}/write`, data, options)
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
+            };
+            http.post(`/qna/${this.qnano}/comment/`, data, options)
             .then(({status})=>{
                 switch(status){
                     case 200:
@@ -68,6 +71,19 @@ export default {
                     alert("서버와 통신중 에러가 발생했습니다.");
                     this.$router.push("/");
                     break;
+                }
+            }).catch(async({response})=>{
+                switch(response.status){
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        await this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
                 }
             })
         }

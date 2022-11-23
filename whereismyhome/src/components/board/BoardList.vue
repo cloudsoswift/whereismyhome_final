@@ -12,7 +12,7 @@
                         <div class="col-md-2 text-start">
                             <button type="button" id="btn-mv-register"
                                     class="btn btn-outline-primary btn-sm"
-                                    v-if="isLogin"
+                                    v-if="isLogin && isAdmin"
                                     @click="$router.push({name: 'boardwrite'})">글쓰기</button>
                         </div>
                         <div class="col-md-7 offset-3">
@@ -38,7 +38,6 @@
                                 <th scope="col">제목</th>
                                 <th scope="col">작성자</th>
                                 <th scope="col">작성일</th>
-                                <th scope="col">좋아요</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,7 +48,6 @@
                                     style="text-decoration: none">{{article.subject}}</router-link></td>
                                 <td>{{article.userId}}</td>
                                 <td>{{article.registerTime}}</td>
-                                <td>100</td>
                             </tr>
                         </tbody>
                     </table>
@@ -83,7 +81,7 @@ export default {
     },
     computed:{
         ...mapState(["user", "board"]),
-        ...mapGetters(["isLogin"])
+        ...mapGetters(["isLogin", "isAdmin"])
     },
     mounted() {
         this.getBoardList();

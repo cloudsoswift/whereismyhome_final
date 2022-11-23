@@ -34,7 +34,7 @@
                     <div class="d-flex justify-content-end">
                         <button type="button" id="btn-list" class="btn btn-outline-primary mb-3"
                             @click="$router.push({name: 'boardlist'})">글목록</button>
-                        <span v-if="article.userId == user.userId">
+                        <span v-if="isLogin && isAdmin">
                             <button type="button" id="btn-mv-modify" class="btn btn-outline-success mb-3 ms-1"
                                 @click="modifyArticle">
                                 글수정
@@ -64,7 +64,7 @@ export default {
     },
     computed: {
         ...mapState(["user","tokens"]),
-        ...mapGetters(['isLogin']),
+        ...mapGetters(['isLogin', 'isAdmin']),
     },
     created() {
         http.get(`/board/${this.$route.params.id}`)
@@ -124,11 +124,11 @@ export default {
                     this.$router.push("/");
                     break;
                 }
-            }).catch(({response})=>{
+            }).catch(async({response})=>{
                 switch(response.status){
                     case 401:
                         //HttpStatus.UNAUTHORIZED
-                        this.$store.dispatch("tokenRefresh")
+                        await this.$store.dispatch("tokenRefresh")
                         if(!this.isLogin){
                             alert("로그인이 만료되었습니다.");
                             this.$router.push("/user/login");
