@@ -32,6 +32,7 @@ import com.ssafy.home.apart.model.HouseDTO;
 import com.ssafy.home.apart.model.HouseLikeDTO;
 import com.ssafy.home.apart.model.service.ApartService;
 import com.ssafy.home.apart.model.service.ApartServiceImpl;
+import com.ssafy.home.jwt.JwtService;
 import com.ssafy.home.user.model.UserDTO;
 
 
@@ -39,10 +40,12 @@ import com.ssafy.home.user.model.UserDTO;
 @RequestMapping("/apart")
 public class ApartController extends HttpServlet {
 	
-	ApartService service;
+	private ApartService service;
+	private JwtService jwtService;
 	@Autowired
-	public ApartController(ApartService service) {
+	public ApartController(ApartService service, JwtService jwtService) {
 		this.service = service;
+		this.jwtService = jwtService; 
 	}
 
 	@GetMapping("/")
@@ -133,7 +136,9 @@ public class ApartController extends HttpServlet {
 	
 	@DeleteMapping("/like/{no}")
 	@ResponseBody
-	public ResponseEntity<?> removeInterestApart(@PathVariable String no, HttpSession session) {
+	public ResponseEntity<?> removeInterestApart(@PathVariable String no, HttpServletRequest request) {
+		String token = request.getHeader("access-token");
+		if(token != null && jwtService.checkToken(token)) {
 		UserDTO user = (UserDTO) session.getAttribute("userInfo");
 		if(user != null) {
 			Map<String, String> map = new HashMap<String, String>();

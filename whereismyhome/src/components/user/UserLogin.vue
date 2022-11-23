@@ -70,8 +70,9 @@ export default {
                 userPassword: this.Password,
             }
             this.login(info).then((status)=>{
+                console.log(status)
                 switch(status){
-                    case 200:
+                case 200:
                     //HttpStatus.OK
                     this.$router.push("/");
                     break;

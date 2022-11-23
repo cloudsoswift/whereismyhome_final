@@ -23,6 +23,7 @@
                     <b-nav-item :to="{ name: 'mypage'}">MyPage</b-nav-item>
                     <b-nav-item href="#" class="nav-link scrollto" @click="doLogout()">Logout</b-nav-item >
                     <b-nav-text style="color: #e43c5c; font-weight: 700">{{userInfo.userId}}({{userInfo.userName}})</b-nav-text>
+                    <b-nav-item href="#" class="nav-link scrollto" @click="refreshTest()">RT</b-nav-item >
                 </b-navbar-nav>
                 <i class="bi bi-list mobile-nav-toggle navbar-right"></i>
             </b-navbar>
@@ -65,7 +66,7 @@ export default {
                 if(this.$route.name != "index")
                     this.$router.push('/');
             })
-        }  
+        },
     },
 };
 </script>

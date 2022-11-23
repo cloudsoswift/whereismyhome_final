@@ -143,36 +143,36 @@ export default new Vuex.Store({
           console.log(error);
         });
     },
+    // 유저 관련
     login({ commit }, loginInput) {
-      return http.post("/user/login", loginInput).then(({ data, status }) => {
-        let userData = {};
-        switch (status) {
-          case 200:
-            //HttpStatus.OK
-            commit("SET_USER_TOKENS", {
-              accessToken: data["access-token"],
-              refreshToken: data["refresh-token"],
-            });
-            userData = JSON.parse(jwtParser(data["access-token"]));
-            commit("SET_USER", {
-              userId: userData.userid,
-              userName: userData.username,
-              userPhone: userData.userphone,
-              userAddress: userData.useraddress,
-            });
-            break;
-          case 406:
-            //HttpStatus.NOT_ACCEPTABLE
-            alert("ID 혹은 비밀번호가 틀렸습니다.");
-            break;
-          case 500:
-            //HttpStatus.INTERNAL_SERVER_ERROR
-            alert("로그인 중 서버 오류가 발생했습니다.");
-            this.$router.push("/");
-            break;
-        }
-        return status;
-      });
+      return http
+        .post("/user/login", loginInput)
+        .then(({ data, status }) => {
+          let userData = {};
+          switch (status) {
+            case 200:
+              //HttpStatus.OK
+              commit("SET_USER_TOKENS", {
+                accessToken: data["access-token"],
+                refreshToken: data["refresh-token"],
+              });
+              userData = JSON.parse(jwtParser(data["access-token"]));
+              console.log(userData);
+              commit("SET_USER", {
+                userId: userData.userid,
+                userName: userData.username,
+                userPhone: userData.userphone,
+                userAddress: userData.useraddress,
+                role: userData.role,
+                joinDate: userData.joindate,
+              });
+              break;
+          }
+          return status;
+        })
+        .catch(({ response }) => {
+          return response.status;
+        });
     },
     logout() {
       return http
@@ -190,6 +190,50 @@ export default new Vuex.Store({
           this.commit("CLEAR_USER");
           this.commit("CLEAR_USER_TOKENS");
           return status;
+        });
+    },
+    tokenRefresh({ commit }) {
+      return http
+        .post(
+          "/user/refresh",
+          {},
+          {
+            headers: {
+              "refresh-token": this.state.tokens.refreshToken,
+            },
+          }
+        )
+        .then(({ status, data }) => {
+          switch (status) {
+            case 200:
+              //HttpStatus.OK
+              commit("SET_USER_TOKENS", {
+                accessToken: data["access-token"],
+                refreshToken: this.state.tokens.refreshToken,
+              });
+              break;
+            case 401:
+              //HttpStatus.UNAUTHORIZED
+              //Refresh Token도 만료 됨.
+              commit("CLEAR_USER_TOKENS");
+              commit("CLEAR_USER");
+              break;
+            case 500:
+              //HttpStatus.INTERNAL_SERVER_ERROR
+              break;
+          }
+          return status;
+        })
+        .catch(({ response }) => {
+          switch (response.status) {
+            case 401:
+              //HttpStatus.UNAUTHORIZED
+              //Refresh Token도 만료 됨.
+              commit("CLEAR_USER_TOKENS");
+              commit("CLEAR_USER");
+              break;
+          }
+          return response.status;
         });
     },
   },

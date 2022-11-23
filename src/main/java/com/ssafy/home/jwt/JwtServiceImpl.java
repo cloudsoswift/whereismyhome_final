@@ -32,14 +32,14 @@ public class JwtServiceImpl implements JwtService {
 	@Override
 	public <T> String createAccessToken(UserDTO loginUser) {
 //		return create(key, data, "access-token", 1000 * 60 * ACCESS_TOKEN_EXPIRE_MINUTES);
-		return create(loginUser, "access-token", 1000 * 10 * ACCESS_TOKEN_EXPIRE_MINUTES);
+		return create(loginUser, "access-token", 1000 * 30 * ACCESS_TOKEN_EXPIRE_MINUTES);
 	}
 
 //	AccessToken에 비해 유효기간을 길게...
 	@Override
 	public <T> String createRefreshToken(UserDTO loginUser) {
 //		return create(key, data, "refresh-token", 1000 * 60 * 60 * 24 * 7 * REFRESH_TOKEN_EXPIRE_MINUTES);
-		return create(loginUser, "refresh-token", 1000 * 30 * ACCESS_TOKEN_EXPIRE_MINUTES);
+		return create(loginUser, "refresh-token", 1000 * 60 * ACCESS_TOKEN_EXPIRE_MINUTES);
 	}
 
 	//Token 발급
@@ -63,6 +63,8 @@ public class JwtServiceImpl implements JwtService {
 				.claim("username", loginUser.getUserName())
 				.claim("useraddress", loginUser.getUserAddress())
 				.claim("userphone", loginUser.getUserPhone())
+				.claim("role", loginUser.getRole())
+				.claim("joindate", loginUser.getJoinDate())
 				// Signature 설정 : secret key를 활용한 암호화.
 				.signWith(SignatureAlgorithm.HS256, this.generateKey())
 				.compact(); // 직렬화 처리.
@@ -110,10 +112,10 @@ public class JwtServiceImpl implements JwtService {
 	}
 
 	@Override
-	public Map<String, Object> get() {
+	public Map<String, Object> get(String type) {
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
 				.getRequest();
-		String jwt = request.getHeader("access-token");
+		String jwt = request.getHeader(type);
 		Jws<Claims> claims = null;
 		try {
 			claims = Jwts.parser().setSigningKey(SALT.getBytes("UTF-8")).parseClaimsJws(jwt);
@@ -135,8 +137,15 @@ public class JwtServiceImpl implements JwtService {
 	}
 
 	@Override
-	public String getUserId() {
-		return (String) this.get().get("userid");
+	public UserDTO getUser(String type) {
+		Map<String, Object> decoded = this.get(type);
+		UserDTO user = new UserDTO();
+		user.setUserId((String) decoded.get("userid"));
+		user.setUserName((String)decoded.get("username"));
+		user.setUserPhone((String)decoded.get("userphone"));
+		user.setUserAddress((String)decoded.get("useraddress"));
+		user.setRole((int)decoded.get("role"));
+		return user;
 	}
 
 }

@@ -7,6 +7,7 @@ public class UserDTO {
 	private String userAddress;
 	private String userPhone;
 	private String joinDate;
+	private int role;
 	
 	public String getUserId() {
 		return userId;
@@ -44,10 +45,17 @@ public class UserDTO {
 	public void setJoinDate(String joinDate) {
 		this.joinDate = joinDate;
 	}
+	public int getRole() {
+		return role;
+	}
+	public void setRole(int role) {
+		this.role = role;
+	}
 	@Override
 	public String toString() {
-		return "MemberDTO [userId=" + userId + ", userPassword=" + userPassword + ", userName=" + userName
-				+ ", userAddress=" + userAddress + ", userPhone=" + userPhone + ", joinDate=" + joinDate + "]";
+		return "UserDTO [userId=" + userId + ", userPassword=" + userPassword + ", userName=" + userName
+				+ ", userAddress=" + userAddress + ", userPhone=" + userPhone + ", joinDate=" + joinDate + ", role="
+				+ role + "]";
 	}
 	
 }

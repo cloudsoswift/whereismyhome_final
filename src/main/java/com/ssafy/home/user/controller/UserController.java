@@ -132,7 +132,7 @@ public class UserController{
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = HttpStatus.ACCEPTED;
 		try {
-			userService.deleRefreshToken((String)jwtService.get().get("userid"));
+			userService.deleRefreshToken((String)jwtService.get("access-token").get("userid"));
 			resultMap.put("message", SUCCESS);
 			status = HttpStatus.ACCEPTED;
 		} catch (Exception e) {
@@ -145,20 +145,21 @@ public class UserController{
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<?> refreshToken(@RequestBody UserDTO userDto, HttpServletRequest request)
+	public ResponseEntity<?> refreshToken(HttpServletRequest request)
 			throws Exception {
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = HttpStatus.ACCEPTED;
 		String token = request.getHeader("refresh-token");
-		logger.debug("token : {}, memberDto : {}", token, userDto);
 		if (jwtService.checkToken(token)) {
-			if (token.equals(userService.getRefreshToken(userDto.getUserId()))) {
-				String accessToken = jwtService.createAccessToken(userDto);
+			UserDTO user = jwtService.getUser("refresh-token");
+			logger.debug("token : {}, memberDto : {}", token, user);
+			if (token.equals(userService.getRefreshToken(user.getUserId()))) {
+				String accessToken = jwtService.createAccessToken(user);
 				logger.debug("token : {}", accessToken);
 				logger.debug("정상적으로 액세스토큰 재발급!!!");
 				resultMap.put("access-token", accessToken);
 				resultMap.put("message", SUCCESS);
-				status = HttpStatus.ACCEPTED;
+				status = HttpStatus.OK;
 			}
 		} else {
 			logger.debug("리프레쉬토큰도 사용불!!!!!!!");
@@ -198,12 +199,7 @@ public class UserController{
 	public ResponseEntity<?> mypage(HttpServletRequest request) {
 		String token = request.getHeader("access-token");
 		if(token != null && jwtService.checkToken(token)) {
-			Map<String, Object> decoded = jwtService.get();
-			UserDTO user = new UserDTO();
-			user.setUserId((String) decoded.get("userid"));
-			user.setUserName((String)decoded.get("username"));
-			user.setUserPhone((String)decoded.get("userphone"));
-			user.setUserAddress((String)decoded.get("useraddress"));
+			UserDTO user = jwtService.getUser("access-token");
 			Map<String, Object> resultMap = new HashMap<String, Object>();
 			resultMap.put("user", user);
 			try {
@@ -229,12 +225,13 @@ public class UserController{
 			user.setUserName(map.get("Name"));
 			user.setUserAddress(map.get("Address"));
 			user.setUserPhone(map.get("Phone"));
-			user.setUserId((String) jwtService.get().get("userid"));
+			user.setUserId((String) jwtService.get("access-token").get("userid"));
+			System.out.println(user);
 			int cnt = 0;
 			try {
 				cnt = userService.updateUser(user);
 				if(cnt == 1) {
-					return new ResponseEntity<Integer>(cnt, HttpStatus.OK);
+					return login(user);
 				} else {
 					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
 				}
@@ -252,12 +249,7 @@ public class UserController{
 	public ResponseEntity<?> deleteUser(HttpServletRequest request, Model model) {
 		String token = request.getHeader("access-token");
 		if(token != null && jwtService.checkToken(token)) {
-			Map<String, Object> decoded = jwtService.get();
-			UserDTO user = new UserDTO();
-			user.setUserId((String) decoded.get("userid"));
-			user.setUserName((String)decoded.get("username"));
-			user.setUserPhone((String)decoded.get("userphone"));
-			user.setUserAddress((String)decoded.get("useraddress"));
+			UserDTO user = jwtService.getUser("access-token");
 			try {
 				int cnt = userService.deleteUser(user);
 				if(cnt == 1) {

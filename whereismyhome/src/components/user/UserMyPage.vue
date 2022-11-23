@@ -9,47 +9,44 @@
 			</div>
 
 			<div class="row mt-5">
-				<div class="col-lg-4">
-					<div class="info">
-						<div class="address">
-							<i class="bi bi-envelope"></i>
-							<h4>회원 정보 수정하기</h4>
-							<p>아이디: {{user.userId }}</p>
-						</div>
-							<i class="bi bi-envelope"></i>
-							<h4 class="d-inline ps-3">회원 탈퇴하기</h4>
-							<button class="btn btn-secondary d-inline" id="deleteBtn" @click="deleteUser">삭제</button>
-					</div>
-				</div>
-
-				<div class="col-lg-8 mt-5 mt-lg-0 w-65 p-3" style="margin: 0 auto;">
+				<div class="col-lg-12 mt-5 mt-lg-0 w-65 p-3" style="margin: 0 auto;">
+                    <div class="address info">
+                        <i class="bi bi-envelope"></i>
+                        <h4>회원 정보 수정하기</h4>
+                        <p>아이디: {{user.userId }}</p>
+                    </div>
 					<div class="row">
 						<div class=" form-group mt-3 ">
 							<label for="Password">비밀번호</label>
 							<input type="Password"
 								class="form-control" name="Password" id="userPassword"
 								placeholder="Your Password" required
-								v-model="user.userPassword" />
+								v-model="userInfo.userPassword" />
 						</div>
 					</div>
 					<div class="form-group mt-3">
 						<label for="userName">이름</label><input type="text"
 							class="form-control" name="Name" id="Name"
-							placeholder="Your Name" required v-model="user.userName" />
+							placeholder="Your Name" required v-model="userInfo.userName" />
 					</div>
 					<div class="form-group mt-3">
 						<label for="userAddress">주소</label><input type="text"
 							class="form-control" name="Address" id="Address"
-							placeholder="Your Address" required v-model="user.userAddress" />
+							placeholder="Your Address" required v-model="userInfo.userAddress" />
 					</div>
 					<div class="form-group mt-3">
 						<label for="userPhone">휴대폰번호</label><input type="text"
 							class="form-control" name="Phone" id="Phone"
 							placeholder="Your Phone Number" required
-							v-model="user.userPhone" />
+							v-model="userInfo.userPhone" />
 					</div>
 					<div class="text-center mt-3">
 						<button id="modifyBtn" class="btn btn-danger" @click="modifyUser">수정하기</button>
+					</div>
+                    <div class="info">
+							<i class="bi bi-envelope"></i>
+							<h4 class="d-inline ps-3">회원 탈퇴하기</h4>
+							<button class="btn btn-secondary d-inline" id="deleteBtn" @click="deleteUser">삭제</button>
 					</div>
 				</div>
 			</div>
@@ -132,7 +129,7 @@ export default {
 
     data() {
         return {
-            user:"",
+            userInfo:{},
             list:[],
         };
     },
@@ -161,7 +158,7 @@ export default {
                 case 200:
                     // HttpStatus.OK
                     this.list = data.list;
-                    this.user = data.user;
+                    this.userInfo = data.user;
                     break;
                 case 403:
                     //HttpStatus.FORBIDDEN
@@ -175,6 +172,14 @@ export default {
                     break;
             }
         })
+        .catch(({ response }) => {
+            switch (response.status) {
+                case 401:
+                //HttpStatus.UNAUTHORIZED
+                this.$store.dispatch("tokenRefresh")
+                break;
+            }
+        });
     },
     mounted() {
         
@@ -183,16 +188,26 @@ export default {
     methods: {
         modifyUser() {
             http.put("/user/", {
-                Password: this.user.userPassword,
-                Name: this.user.userName,
-                Address: this.user.userAddress,
-                Phone: this.user.userPhone,
-            },{withCredentials: true})
-            .then(({status})=>{
+                Password: this.userInfo.userPassword,
+                Name: this.userInfo.userName,
+                Address: this.userInfo.userAddress,
+                Phone: this.userInfo.userPhone,
+            },{
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
+            })
+            .then(({data, status})=>{
                 switch(status){
                     case 200:
                     // HttpStatus.OK
                     alert("회원정보 수정에 성공했습니다.");
+                    console.log(data);
+                    this.$store.commit("SET_USER_TOKENS", {
+                        accessToken: data["access-token"],
+                        refreshToken: data["refresh-token"],
+                    });
+                    this.$store.commit('SET_USER', this.userInfo);
                     this.$router.go(); // 새로고침
                     break;
                 case 401:
@@ -212,6 +227,14 @@ export default {
                 }
             }
             )
+            .catch(({ response }) => {
+                switch (response.status) {
+                    case 401:
+                    //HttpStatus.UNAUTHORIZED
+                    this.$store.dispatch("tokenRefresh")
+                    break;
+                }
+            });
         },
         deleteUser() {
             http.delete("/user/",{
