@@ -41,6 +41,7 @@
 
 <script>
 import http from '@/util/http';
+import { mapState, mapGetters } from "vuex";
 
 export default {
     name: 'BoardWrite',
@@ -56,14 +57,21 @@ export default {
         
     },
 
+    computed: {
+        ...mapState(["user","tokens"]),
+        ...mapGetters(['isLogin']),
+    },
+
     methods: {
         boardWrite(){
             const data = {
                 subject: this.subject,
                 content: this.content,
             }
-            const options =  {
-                    withCredentials: true
+            const options = {
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
             };
             http.post("/board/write", data, options)
             .then(({status})=>{
@@ -87,6 +95,19 @@ export default {
                     alert("서버와 통신중 에러가 발생했습니다.");
                     this.$router.push("/");
                     break;
+                }
+            }).catch(({response})=>{
+                switch(response.status){
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
                 }
             })
         }

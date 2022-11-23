@@ -25,7 +25,7 @@
                     </div>
                     <div class="col-auto text-center">
                         <button type="button" id="btn-register" 
-                        class="btn btn-outline-primary mb-3" @click="boardWrite">
+                        class="btn btn-outline-primary mb-3" @click="qnaWrite">
                         QnA 작성
                         </button> 
                         <button type="button" id="btn-list" class="btn btn-outline-danger mb-3" @click="$router.push({name:'qnalist'})">
@@ -41,6 +41,7 @@
 
 <script>
 import http from '@/util/http';
+import { mapGetters, mapState } from "vuex";
 
 export default {
     name: 'QnaWrite',
@@ -51,21 +52,26 @@ export default {
             content:"",
         };
     },
-
+    computed: {
+        ...mapState(['tokens']),
+        ...mapGetters(['isLogin']),
+    },
     mounted() {
         
     },
 
     methods: {
-        boardWrite(){
+        qnaWrite(){
             const data = {
                 subject: this.subject,
                 content: this.content,
             }
-            const options =  {
-                withCredentials: true
+            const options = {
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
             };
-            http.post("/qna/write", data, options)
+            http.post("/qna/", data, options)
             .then(({status})=>{
                 switch(status){
                     case 200:
@@ -87,6 +93,19 @@ export default {
                     alert("서버와 통신중 에러가 발생했습니다.");
                     this.$router.push("/");
                     break;
+                }
+            }).catch(({response})=>{
+                switch(response.status){
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
                 }
             })
         }

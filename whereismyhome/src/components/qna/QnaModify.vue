@@ -16,15 +16,12 @@
                 <div class="row">
                     <div class="col-md-8 px-5">
                         <div class="clearfix align-content-center">
-                            <img class="avatar me-2 float-md-start bg-light p-2"
-                                src="https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg" />
                             <p>
                                 <span class="fw-bold">{{qna.userId}}</span> <br /> <span
                                     class="text-secondary fw-light"> {{qna.registerTime}} </span>
                             </p>
                         </div>
                     </div>
-                    <div class="col-md-4 align-self-center text-end">댓글 : 17</div>
                     <div class="divider mb-3"></div>
                     <input
                         class="form-control text-secondary border border-info rounded mx-auto"
@@ -45,6 +42,7 @@
 
 <script>
 import http from '@/util/http';
+import { mapState, mapGetters } from "vuex";
 
 export default {
     name: 'QnaModify',
@@ -76,36 +74,65 @@ export default {
     mounted() {
         
     },
-
+    computed: {
+        ...mapState(["user","tokens"]),
+        ...mapGetters(['isLogin']),
+    },
     methods: {
         modifyQna(){
             const options = {
-                withCredentials: true
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
             }
-            http.put(`/qna/modify/${this.qna.qnano}`, this.qna, options)
+            http.put(`/qna/${this.qna.qnano}`, this.qna, options)
             .then(({status})=>{
                 switch(status){
                     case 200:
-                    // HttpStatus.OK
-                    alert("글 수정에 성공했습니다.");
-                    this.$router.push({
-                        name: 'qnalist',
+                        // HttpStatus.OK
+                        alert("글 수정에 성공했습니다.");
+                        this.$router.push({
+                            name: 'qnalist',
                     })
-                    break;
-                case 406:
-                    //HttpStatus.NOT_ACCEPTABLE
-                    alert("글 수정에 실패했습니다. 다시 시도해주세요");
-                    break;
-                case 500:
-                    //HttpStatus.INTERNAL_SERVER_ERROR
-                    alert("서버와 통신중 에러가 발생했습니다.");
-                    this.$router.push("/");
-                    break;
+                        break;
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        this.$store.dispatch("tokenRefresh")
+                        alert("로그인이 만료되었습니다.");
+                        this.$router.push("/user/login");
+                        break;
+                    case 406:
+                        //HttpStatus.NOT_ACCEPTABLE
+                        alert("글 수정에 실패했습니다. 다시 시도해주세요");
+                        break;
+                    case 500:
+                        //HttpStatus.INTERNAL_SERVER_ERROR
+                        alert("서버와 통신중 에러가 발생했습니다.");
+                        this.$router.push("/");
+                        break;
+                }
+            }).catch(({response})=>{
+                switch(response.status){
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
                 }
             })
         },
         deleteQna(){
-            http.delete(`/qna/${this.$route.params.id}`)
+            const options = {
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
+            }
+            http.delete(`/qna/${this.$route.params.id}`, options)
             .then(({status})=>{
                 switch(status){
                     case 200:
@@ -122,6 +149,19 @@ export default {
                     alert("서버와 통신중 에러가 발생했습니다.");
                     this.$router.push("/");
                     break;
+                }
+            }).catch(({response})=>{
+                switch(response.status){
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
                 }
             })
         }

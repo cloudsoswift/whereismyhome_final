@@ -9,7 +9,6 @@
 
             <b-navbar id="navbar" class="w-100">
                 <b-navbar-nav>
-                    <b-nav-item :to="{ name: 'index'}">Home</b-nav-item>
                     <b-nav-item :to="{ name: 'index'}">News</b-nav-item>
                     <b-nav-item :to="{ name: 'qna'}">Qna</b-nav-item>
                     <b-nav-item :to="{ name: 'board'}">Board</b-nav-item>
@@ -23,7 +22,6 @@
                     <b-nav-item :to="{ name: 'mypage'}">MyPage</b-nav-item>
                     <b-nav-item href="#" class="nav-link scrollto" @click="doLogout()">Logout</b-nav-item >
                     <b-nav-text style="color: #e43c5c; font-weight: 700">{{userInfo.userId}}({{userInfo.userName}})</b-nav-text>
-                    <b-nav-item href="#" class="nav-link scrollto" @click="refreshTest()">RT</b-nav-item >
                 </b-navbar-nav>
                 <i class="bi bi-list mobile-nav-toggle navbar-right"></i>
             </b-navbar>

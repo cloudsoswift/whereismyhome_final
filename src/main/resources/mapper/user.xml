@@ -80,7 +80,7 @@
 			left join houseinfo as i
 					on b.aptCode = i.aptCode 
 			left join houselike as l
-					on b.no = l.no
+					on b.no = l.aptCode
 		where l.user_id = #{id}
 	</select>
 

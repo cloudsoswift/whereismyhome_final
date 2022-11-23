@@ -152,7 +152,6 @@ export default {
             "access-token": this.tokens.accessToken,
           }
         })
-        // .then((response)=>console.log(response));
         .then(({data, status})=>{
             switch(status){
                 case 200:
@@ -177,6 +176,8 @@ export default {
                 case 401:
                 //HttpStatus.UNAUTHORIZED
                 this.$store.dispatch("tokenRefresh")
+                alert("로그인이 만료되었습니다.");
+                this.$router.push("/user/login");
                 break;
             }
         });

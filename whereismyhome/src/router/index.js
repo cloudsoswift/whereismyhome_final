@@ -79,11 +79,6 @@ const routes = [
         component: () => import("@/components/qna/QnaWrite"),
       },
       {
-        path: "view/:id",
-        name: "qnaview",
-        component: () => import("@/components/qna/QnaView"),
-      },
-      {
         path: "modify/:id",
         name: "qnamodify",
         component: () => import("@/components/qna/QnaModify"),

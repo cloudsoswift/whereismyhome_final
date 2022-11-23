@@ -8,7 +8,7 @@
             </div>
             <div class="col-lg-8 col-md-10 col-sm-12">
                 <div class="row my-2">
-                    <h2 class="text-secondary px-5">{{article.boardNo}}. {{article.subject}}</h2>
+                    <h2 class="text-secondary px-5">{{article.subject}}</h2>
                 </div>
                 <div class="row">
                     <div class="col-md-8 px-5">
@@ -19,11 +19,10 @@
                             />
                             <p>
                                 <span class="fw-bold">{{article.userId}}</span> <br />
-                                <span class="text-secondary fw-light"> {{article.registerTime}} 좋아요 : 100 </span>
+                                <span class="text-secondary fw-light"> {{article.registerTime}}</span>
                             </p>
                         </div>
                     </div>
-                    <div class="col-md-4 align-self-center text-end">댓글 : 17</div>
                     <div class="divider mb-3" />
                     <div
                         class="text-secondary border border-info rounded mx-auto"
@@ -54,7 +53,7 @@
 
 <script>
 import http from '@/util/http';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 export default {
     name: 'BoardView',
 
@@ -64,7 +63,8 @@ export default {
         };
     },
     computed: {
-        ...mapState(["user"])
+        ...mapState(["user","tokens"]),
+        ...mapGetters(['isLogin']),
     },
     created() {
         http.get(`/board/${this.$route.params.id}`)
@@ -101,7 +101,12 @@ export default {
             })
         },
         deleteArticle(){
-            http.delete(`/board/${this.$route.params.id}`)
+            const options = {
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
+            }
+            http.delete(`/board/${this.$route.params.id}`, options)
             .then(({status})=>{
                 switch(status){
                     case 200:
@@ -118,6 +123,19 @@ export default {
                     alert("서버와 통신중 에러가 발생했습니다.");
                     this.$router.push("/");
                     break;
+                }
+            }).catch(({response})=>{
+                switch(response.status){
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
                 }
             })
         }

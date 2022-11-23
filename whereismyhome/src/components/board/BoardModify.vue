@@ -45,6 +45,7 @@
 
 <script>
 import http from '@/util/http';
+import { mapState, mapGetters } from "vuex";
 
 export default {
     name: 'BoardModify',
@@ -59,6 +60,10 @@ export default {
                 userId:"",
             }
         };
+    },
+        computed: {
+        ...mapState(['tokens']),
+        ...mapGetters(['isLogin']),
     },
     created() {
         if(this.$route.params.article == undefined){
@@ -88,9 +93,11 @@ export default {
                 content: this.article.content
             }
             const options = {
-                withCredentials: true
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
             }
-            http.put(`/board/modify/`, article, options)
+            http.put(`/board/${this.$route.params.id}/`, article, options)
             .then(({status})=>{
                 switch(status){
                     case 200:
@@ -113,10 +120,28 @@ export default {
                     this.$router.push("/");
                     break;
                 }
+            }).catch(({response})=>{
+                switch(response.status){
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
+                }
             })
         },
         deleteArticle(){
-            http.delete(`/board/${this.$route.params.id}`)
+            const options = {
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
+            }
+            http.delete(`/board/${this.$route.params.id}`, options)
             .then(({status})=>{
                 switch(status){
                     case 200:
@@ -133,6 +158,19 @@ export default {
                     alert("서버와 통신중 에러가 발생했습니다.");
                     this.$router.push("/");
                     break;
+                }
+            }).catch(({response})=>{
+                switch(response.status){
+                    case 401:
+                        //HttpStatus.UNAUTHORIZED
+                        this.$store.dispatch("tokenRefresh")
+                        if(!this.isLogin){
+                            alert("로그인이 만료되었습니다.");
+                            this.$router.push("/user/login");
+                        } else {
+                            alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                        }
+                        break;
                 }
             })
         }
