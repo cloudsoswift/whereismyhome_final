@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.resource.HttpResource;
 
+import com.ssafy.home.UnAuthorizedException;
 import com.ssafy.home.apart.model.HouseDTO;
 import com.ssafy.home.apart.model.HouseLikeDTO;
 import com.ssafy.home.apart.model.service.ApartService;
@@ -48,18 +49,25 @@ public class ApartController extends HttpServlet {
 		this.service = service;
 		this.jwtService = jwtService; 
 	}
-
-	@GetMapping("/")
-	public String apartList() {
-		return "apart/aptlist";
-	}
 	
 	@GetMapping("/list/{dongCode}")
 	@ResponseBody
-	public ResponseEntity<?> search(@PathVariable String dongCode) {
+	public ResponseEntity<?> search(@PathVariable String dongCode, HttpServletRequest request) {
 		Map<String, String> map = new HashMap<String, String>();
 		List<HouseDTO> list = new ArrayList<HouseDTO>();
 		map.put("code", dongCode);
+		String token = request.getHeader("access-token");
+		if(token != null && jwtService.checkToken(token)) {
+			try {
+				UserDTO user = jwtService.getUser("access-token");
+			}catch (Exception e) {
+				e.printStackTrace();
+				return exceptionHandling(e);
+			}
+			map.put("user_id",jwtService.getUser("access-token").getUserId());
+		} else {			
+			map.put("user_id","");
+		}
 		try {
 			list = service.searchApart(map);
 			System.out.println(list);
@@ -117,21 +125,21 @@ public class ApartController extends HttpServlet {
 	@PostMapping("/like/{no}")
 	@ResponseBody
 	public ResponseEntity<?> addInterestApart(@PathVariable String no, HttpServletRequest req) {
-		UserDTO user = jwtService.getUser("access-token");
-		
-		if(user != null) {
-			HouseLikeDTO houseLikeDTO = new HouseLikeDTO();
-			houseLikeDTO.setUser_id(user.getUserId());
-			houseLikeDTO.setNo(no);
-			houseLikeDTO.setIp_address(req.getHeader("X-FORWARDED-FOR"));
-			try {
+		try {
+			UserDTO user = jwtService.getUser("access-token");
+			
+			if(user != null) {
+				HouseLikeDTO houseLikeDTO = new HouseLikeDTO();
+				houseLikeDTO.setUser_id(user.getUserId());
+				houseLikeDTO.setNo(no);
+				houseLikeDTO.setIp_address(req.getHeader("X-FORWARDED-FOR"));
 				service.addInterestApart(houseLikeDTO);
-				System.out.println("관심매매 등록 완료");
+				System.out.println("관심아파트 등록 완료");
 				return new ResponseEntity<Integer>(1, HttpStatus.OK);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return exceptionHandling(e);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return exceptionHandling(e);
 		}
 		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
 	}
@@ -139,26 +147,29 @@ public class ApartController extends HttpServlet {
 	@DeleteMapping("/like/{no}")
 	@ResponseBody
 	public ResponseEntity<?> removeInterestApart(@PathVariable String no) {
-		UserDTO user = jwtService.getUser("access-token");
-		
-		if(user != null) {
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("user_id", user.getUserId());
-			map.put("no", no);
-			try {
+		try {
+			UserDTO user = jwtService.getUser("access-token");
+			
+			if(user != null) {
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("user_id", user.getUserId());
+				map.put("no", no);
 				service.deleteInterestApart(map);
-				System.out.println("관심매매 삭제 완료");
+				System.out.println("관심아파트 삭제 완료");
 				return new ResponseEntity<Integer>(1, HttpStatus.OK);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return exceptionHandling(e);
-			}
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+			return exceptionHandling(e);
 		}
 		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
 	}
 	
 	@ResponseBody
 	private ResponseEntity<String> exceptionHandling(Exception e) {
+		if(e instanceof UnAuthorizedException) {
+			return new ResponseEntity<String>("로그인 토큰 만료.",HttpStatus.UNAUTHORIZED);
+		}
 		return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

@@ -13,16 +13,9 @@
             <!-- 검색 결과와 지도 -->
             <div id="result" class="container-fluid mt-4 mb-5">
                 <div class="row w-100 m-auto">
-                <div id="aptlist" class="col-4 p-0" v-if="houses.length != 0">
-                    <h3>거래 정보</h3>
-
-                </div>
                 <div class="col-12">
                     <!-- Kakao Map start -->
-                    <div class="mt-3 p-0 text-center">
-                        <h3>매매 위치</h3>
-                    </div>
-                    <b-card class="ms-2 my-2 w-100 h-100 shadow rounded-4" 
+                    <b-card class="ms-2 my-2 w-100 h-100 shadow rounded-4 text-center" 
                     style="position: absolute; z-index: 8; max-height: 676px; max-width: 300px"
                     title="매물 검색">
                         <button class="btn p-1 px-2 back-button" @click="goBack" v-if="tabIndex > 0">
@@ -47,7 +40,7 @@
                                                             <b-list-group>
                                                                 <b-card>
                                                                     <div v-for="(item, index) in dongs" :key="index">
-                                                                        <b-list-group-item button v-b-toggle="`${item.value}`" :value="item.value" @click="searchAptList">{{item.text}}</b-list-group-item>
+                                                                        <b-list-group-item button v-b-toggle="`${item.value}`" :value="item.value" @click="searchAptList">{{item.text}} <b-badge class="text-bg-dark">{{item.count}}</b-badge></b-list-group-item>
                                                                     </div>
                                                                 </b-card>
                                                             </b-list-group>
@@ -139,7 +132,7 @@ export default {
             // 서버로 보낼 데이터
             this.CLEAR_APT_LIST();
             this.dong = event.target.value;
-            this.dongText = event.target.innerText;
+            this.dongText = event.target.innerText.split(' ')[0]; // innerText에 뱃지 값도 들어있어서
             let param = {
                 addr: this.dong,
             }

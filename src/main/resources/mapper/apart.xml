@@ -5,14 +5,13 @@
 <mapper namespace="com.ssafy.home.apart.model.mapper.ApartMapper">
 
 	<select id="searchApart" parameterType="Map" resultType="HouseDTO">
-		select i.aptCode, i.apartmentName, max(d.dealAmount) dealAmount,
+		select i.aptCode, i.apartmentName,
 		( concat(roadName, ' ', TRIM(LEADING '0' from roadNameBonbun),
 		 IF(TRIM(LEADING '0' from roadNameBubun) != '',
-		 CONCAT('-' , TRIM(LEADING '0' from roadNameBubun)), ''))) roadName, i.lng,
-		i.lat, ROUND(d.area) area, d.floor,
-		concat(d.dealYear,'.', d.dealMonth,'.', d.dealDay) date, d.no
-		from houseinfo i join housedeal d
-		on i.aptCode = d.aptCode
+		 CONCAT('-' , TRIM(LEADING '0' from roadNameBubun)), ''))) roadName, 
+		i.buildYear, i.lng, i.lat, ifnull(l.like_id, -1) like_id
+		from houseinfo i left JOIN (SELECT * from houselike WHERE user_id = #{user_id} ) l
+		ON i.aptCode = l.aptCode
 		where i.dongCode = #{code}
 		group by aptCode;
 	</select>

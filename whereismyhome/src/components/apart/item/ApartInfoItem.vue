@@ -1,13 +1,17 @@
 <template>
     <div>
-        <b-card :title="apartmentName" class="shadow-sm mb-2">
+        <b-card class="shadow-sm mb-2">
+            <a href="#none" @click="goCenter"><h4 class="card-title">{{apartmentName}}</h4></a>
             <b-card-text>{{roadName}}</b-card-text>
+            <button type="button" class="btn p-0" style="width: 30px; height: 30px;" :data-code="aptCode">
+                <font-awesome-icon :icon="like_id < 0 ? 'fa-regular fa-bookmark' :'fa-solid fa-bookmark'" @click.prevent="InterestApart" :data-code="aptCode"></font-awesome-icon>
+            </button>
             <b-row>
                 <button class="btn" @click="loadArea()" v-b-toggle="`${aptCode}`"><font-awesome-icon :icon="aptCode == apartCode ? 'fa-solid fa-angles-up' : 'fa-solid fa-angles-down'" /></button>
             </b-row> 
             <b-collapse v-if="aptCode == apartCode" :id="`${aptCode}`" accordion="area">
                 <div>
-                    <b-badge v-for="(area, index) in areas" :key="index" pill class="mx-1" style="background-color: #0d6efd; text-decoration: none;" href="#" @click="loadDeal(area)">{{area}}m²</b-badge>
+                    <b-badge v-for="(area, index) in areas" :key="index" class="mx-1 text-bg-primary" href="#none" @click="loadDeal(area)">{{area}}m²</b-badge>
                 </div>
                 <canvas id="chartplace" width="100%" height="100%" v-if="isAreaChosen"></canvas>
             </b-collapse>
@@ -22,7 +26,7 @@ import { mapMutations, mapState } from "vuex";
 
 export default {
     name: 'ApartInfoItem',
-    props: ['apartmentName', 'aptCode', 'lat', 'lng', 'roadName', 'like_id'],
+    props: ['apartmentName', 'buildYear', 'aptCode', 'lat', 'lng', 'roadName', 'like_id'],
     data() {
         return {
             areas: [],
@@ -39,6 +43,9 @@ export default {
 
     methods: {
         ...mapMutations(['SET_APART_CODE', 'SET_CENTER_POS']),
+        goCenter() {
+            this.SET_CENTER_POS({lat: this.lat, lng: this.lng});
+        },
         loadArea(){
             if(this.aptCode == this.apartCode){
                 this.SET_APART_CODE("");
@@ -46,7 +53,6 @@ export default {
             }
             this.SET_APART_CODE(this.aptCode);
             this.isAreaChosen = false;
-            this.SET_CENTER_POS({lat: this.lat, lng: this.lng});
             http.get(`/apart/area/${this.aptCode}`)
             .then(({data, status})=>{
                 switch(status){
@@ -103,11 +109,17 @@ export default {
                         }
                 }
             })
+        },
+        InterestApart(){
+
         }
     },
 };
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+a {
+    color: #e43c5c;
+    text-decoration: none;
+}
 </style>

@@ -3,21 +3,23 @@ package com.ssafy.home.apart.model;
 public class HouseDTO {
 	private String aptCode;
 	private String apartmentName;
-	private String dealAmount;
 	private String roadName;
-	private String area;
-	private String floor;
-	private String date;
+	private String buildYear;
 	private String lng;
 	private String lat;
 	private String like_id;
-	private String no;
 	
 	public String getRoadName() {
 		return roadName;
 	}
 	public void setRoadName(String roadName) {
 		this.roadName = roadName;
+	}
+	public String getBuildYear() {
+		return buildYear;
+	}
+	public void setBuildYear(String buildYear) {
+		this.buildYear = buildYear;
 	}
 	public String getLng() {
 		return lng;
@@ -49,43 +51,10 @@ public class HouseDTO {
 	public void setApartmentName(String apartmentName) {
 		this.apartmentName = apartmentName;
 	}
-	public String getDealAmount() {
-		return dealAmount;
-	}
-	public void setDealAmount(String dealAmount) {
-		this.dealAmount = dealAmount;
-	}
-	public String getArea() {
-		return area;
-	}
-	public void setArea(String area) {
-		this.area = area;
-	}
-	public String getFloor() {
-		return floor;
-	}
-	public void setFloor(String floor) {
-		this.floor = floor;
-	}
-	public String getDate() {
-		return date;
-	}
-	public void setDate(String date) {
-		this.date = date;
-	}
-	
-	public String getNo() {
-		return no;
-	}
-	public void setNo(String no) {
-		this.no = no;
-	}
 	@Override
 	public String toString() {
-		return "HouseDTO [aptCode=" + aptCode + ", apartmentName=" + apartmentName + ", dealAmount=" + dealAmount
-				+ ", area=" + area + ", floor=" + floor + ", date=" + date + "]";
+		return "HouseDTO [aptCode=" + aptCode + ", apartmentName=" + apartmentName + ", roadName=" + roadName
+				+ ", buildYear=" + buildYear + ", lng=" + lng + ", lat=" + lat + ", like_id=" + like_id + "]";
 	}
-	
-	
 	
 }

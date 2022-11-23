@@ -18,15 +18,17 @@
 		where right(d.dongcode,5) = '00000' 
 				and left(d.dongcode,2) = #{code}
 				and d.gugunname is not null
+		order by interest_no
 	</select>
 	
 	<select id="getDong" parameterType="String" resultType="Map">
-		select d.dongcode, d.dongName, ifnull(i.interest_no, -1) interest_no
+		select d.dongcode, d.dongName, COUNT(i.aptCode) AS 'count'
 		from dongCode as d
-				left join interest as i 
-		on LEFT(d.dongcode, 5) = LEFT(i.dongcode, 5)
+		left join houseinfo as i
+		ON d.dongCode = i.dongCode
 		where left(d.dongcode, 5) = #{code} and d.dongname is not null
-		order by i.interest_no
+		GROUP BY (d.dongCode)
+		ORDER BY count desc
 	</select>
 	
 	<insert id="addInterestArea" parameterType="AreaLikeDTO">

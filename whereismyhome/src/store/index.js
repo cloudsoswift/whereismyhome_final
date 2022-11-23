@@ -19,6 +19,7 @@ export default new Vuex.Store({
     tokens: {},
     //게시판용
     board: [],
+    pageCount: 0,
   },
   getters: {
     isLogin(state) {
@@ -42,7 +43,7 @@ export default new Vuex.Store({
     },
     SET_DONG_LIST(state, dongs) {
       dongs.forEach((dong) => {
-        state.dongs.push({ value: dong.dongcode, text: dong.dongName, interest_no: dong.interest_no });
+        state.dongs.push({ value: dong.dongcode, text: dong.dongName, count: dong.count });
       });
     },
     SET_HOUSE_LIST(state, houses) {
@@ -89,6 +90,12 @@ export default new Vuex.Store({
     CLEAR_BOARD(state) {
       state.board = [];
     },
+    SET_PAGE_COUNT(state, pageCount) {
+      state.pageCount = pageCount;
+    },
+    CLEAR_PAGE_COUNT(state) {
+      state.pageCount = 0;
+    },
   },
   actions: {
     getSido({ commit }) {
@@ -117,7 +124,7 @@ export default new Vuex.Store({
       http
         .get(`/area/dong/${regCode}`)
         .then(({ data }) => {
-          // console.log(commit, response);
+          console.log(data);
           commit("SET_DONG_LIST", data);
         })
         .catch((error) => {
@@ -135,12 +142,13 @@ export default new Vuex.Store({
           console.log(error);
         });
     },
-    getBoardList({ commit }) {
+    getBoardList({ commit }, params) {
       http
-        .get("/board/page/1")
+        .get(`/board/page/${params[0]}`, {params: params[1]})
         .then(({ data }) => {
           // console.log(commit, response);
-          commit("SET_BOARD_LIST", data);
+          commit("SET_BOARD_LIST", data.list);
+          commit("SET_PAGE_COUNT", data.pgCount);
         })
         .catch((error) => {
           console.log(error);
