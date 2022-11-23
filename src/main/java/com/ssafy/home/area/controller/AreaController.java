@@ -27,6 +27,8 @@ import com.ssafy.home.apart.model.HouseDTO;
 import com.ssafy.home.apart.model.HouseLikeDTO;
 import com.ssafy.home.area.model.AreaLikeDTO;
 import com.ssafy.home.area.model.service.AreaService;
+import com.ssafy.home.board.model.service.BoardService;
+import com.ssafy.home.jwt.JwtService;
 import com.ssafy.home.user.model.UserDTO;
 
 
@@ -35,11 +37,13 @@ import com.ssafy.home.user.model.UserDTO;
 @RequestMapping("/area")
 public class AreaController extends HttpServlet {
 	
-	AreaService service;
-	
+	private AreaService service;
+	private JwtService jwtService;
+
 	@Autowired
-	public AreaController(AreaService service) {
+	public AreaController(AreaService service, JwtService jwtService) {
 		this.service = service;
+		this.jwtService = jwtService;
 	}
 
 	@GetMapping("/{selid}/{regcode}")
@@ -88,8 +92,9 @@ public class AreaController extends HttpServlet {
 	}
 	
 	@PostMapping("/like/{dongCode}")
-	public ResponseEntity<?> addInterestArea(@PathVariable String dongCode, HttpSession session,  HttpServletRequest req) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
+	public ResponseEntity<?> addInterestArea(@PathVariable String dongCode, HttpServletRequest req) {
+		UserDTO user = jwtService.getUser("access-token");
+		
 		if(user != null) {
 			AreaLikeDTO areaLikeDTO = new AreaLikeDTO();
 			areaLikeDTO.setUser_id(user.getUserId());
@@ -108,8 +113,9 @@ public class AreaController extends HttpServlet {
 	}
 	
 	@DeleteMapping("/like/{dongCode}")
-	public ResponseEntity<?> removeInterestArea(@PathVariable String dongCode, HttpSession session,  HttpServletRequest req) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
+	public ResponseEntity<?> removeInterestArea(@PathVariable String dongCode, HttpServletRequest req) {
+		UserDTO user = jwtService.getUser("access-token");
+		
 		if(user != null) {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("user_id", user.getUserId());

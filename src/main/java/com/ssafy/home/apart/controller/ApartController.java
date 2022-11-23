@@ -42,6 +42,7 @@ public class ApartController extends HttpServlet {
 	
 	private ApartService service;
 	private JwtService jwtService;
+	
 	@Autowired
 	public ApartController(ApartService service, JwtService jwtService) {
 		this.service = service;
@@ -115,23 +116,21 @@ public class ApartController extends HttpServlet {
 	
 	@PostMapping("/like/{no}")
 	@ResponseBody
-	public ResponseEntity<?> addInterestApart(@PathVariable String no, HttpServletRequest request) {
-		String token = request.getHeader("access-token");
-		if(token != null && jwtService.checkToken(token)) {
-			UserDTO user = (UserDTO) session.getAttribute("userInfo");
-			if(user != null) {
-				HouseLikeDTO houseLikeDTO = new HouseLikeDTO();
-				houseLikeDTO.setUser_id(user.getUserId());
-				houseLikeDTO.setNo(no);
-				houseLikeDTO.setIp_address(request.getHeader("X-FORWARDED-FOR"));
-				try {
-					service.addInterestApart(houseLikeDTO);
-					System.out.println("관심매매 등록 완료");
-					return new ResponseEntity<Integer>(1, HttpStatus.OK);
-				} catch (Exception e) {
-					e.printStackTrace();
-					return exceptionHandling(e);
-				}
+	public ResponseEntity<?> addInterestApart(@PathVariable String no, HttpServletRequest req) {
+		UserDTO user = jwtService.getUser("access-token");
+		
+		if(user != null) {
+			HouseLikeDTO houseLikeDTO = new HouseLikeDTO();
+			houseLikeDTO.setUser_id(user.getUserId());
+			houseLikeDTO.setNo(no);
+			houseLikeDTO.setIp_address(req.getHeader("X-FORWARDED-FOR"));
+			try {
+				service.addInterestApart(houseLikeDTO);
+				System.out.println("관심매매 등록 완료");
+				return new ResponseEntity<Integer>(1, HttpStatus.OK);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return exceptionHandling(e);
 			}
 		}
 		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
@@ -139,10 +138,9 @@ public class ApartController extends HttpServlet {
 	
 	@DeleteMapping("/like/{no}")
 	@ResponseBody
-	public ResponseEntity<?> removeInterestApart(@PathVariable String no, HttpServletRequest request) {
-		String token = request.getHeader("access-token");
-		if(token != null && jwtService.checkToken(token)) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
+	public ResponseEntity<?> removeInterestApart(@PathVariable String no) {
+		UserDTO user = jwtService.getUser("access-token");
+		
 		if(user != null) {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("user_id", user.getUserId());

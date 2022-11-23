@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.home.board.model.BoardDTO;
+import com.ssafy.home.jwt.JwtService;
 import com.ssafy.home.qna.model.CommentDTO;
 import com.ssafy.home.qna.model.QNADTO;
 import com.ssafy.home.qna.model.service.CommentService;
@@ -40,17 +42,19 @@ public class QNAController {
 
 	private QNAService qnaService;
 	private CommentService commentService;
+	private JwtService jwtService;
 
 	@Autowired
-	public QNAController(QNAService qnaService, CommentService commentService) {
+	public QNAController(QNAService qnaService, CommentService commentService, JwtService jwtService) {
 		this.qnaService = qnaService;
 		this.commentService = commentService;
+		this.jwtService = jwtService;
 	}
 
 	/*--------------------------------------QNA 관련------------------------------------*/
 
 	// 글 목록 가져오기
-	@GetMapping("/{idx}")
+	@GetMapping("/page/{idx}")
 	public ResponseEntity<?> listQna(@PathVariable int idx) throws Exception {
 		List<QNADTO> list = qnaService.listQNA(idx);
 
@@ -66,12 +70,13 @@ public class QNAController {
 	}
 
 	// QNA 글 등록 요청
-	@PostMapping("/write")
-	public ResponseEntity<?> writeQna(@RequestBody QNADTO qna, HttpSession session) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
+	@PostMapping("/")
+	public ResponseEntity<?> writeQna(@RequestBody QNADTO qna) {
+		UserDTO user = jwtService.getUser("access-token");
+
 		if (user != null) {
-			qna.setUserId(user.getUserId());
 			try {
+				qna.setUserId(user.getUserId());
 				int cnt = qnaService.writeArticle(qna);
 				if (cnt == 1) {
 					return new ResponseEntity<String>("/qna/", HttpStatus.OK);
@@ -87,15 +92,13 @@ public class QNAController {
 	}
 
 	// QNA 댓글 등록 요청
-	@PostMapping("/{qna}/write")
-	public ResponseEntity<?> writeComment(@PathVariable("qna") int id, @RequestBody CommentDTO comment,
-			HttpSession session) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
+	@PostMapping("/{qna}/comment")
+	public ResponseEntity<?> writeComment(@PathVariable("qna") int id, @RequestBody CommentDTO comment) {
+		UserDTO user = jwtService.getUser("access-token");
 
 		if (user != null) {
-			comment.setUserId(user.getUserId());
-			comment.setQnaNo(id);
 			try {
+				comment.setUserId(user.getUserId());
 				int cnt = commentService.writeComment(comment);
 				if (cnt == 1) {
 					return new ResponseEntity<String>("/qna/", HttpStatus.OK);
@@ -112,8 +115,8 @@ public class QNAController {
 
 	// QNA 글 보기
 	@GetMapping("/{qna}")
-	public ResponseEntity<?> getArticle(@PathVariable("qna") int id) throws Exception {
-		QNADTO dto = qnaService.viewArticle(id);
+	public ResponseEntity<?> getArticle(@PathVariable("qna") int qna) throws Exception {
+		QNADTO dto = qnaService.viewArticle(qna);
 
 		try {
 			if (dto != null)
@@ -128,8 +131,8 @@ public class QNAController {
 
 	// QNA 댓글 보기
 	@GetMapping("/{qna}/comment")
-	public ResponseEntity<?> getComment(@PathVariable("qna") int id) throws Exception {
-		List<CommentDTO> list = commentService.listComment(id);
+	public ResponseEntity<?> getComment(@PathVariable("qna") int qna) throws Exception {
+		List<CommentDTO> list = commentService.listComment(qna);
 
 		try {
 			if (list != null)
@@ -143,79 +146,93 @@ public class QNAController {
 	}
 
 	// QNA 글 삭제
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteQna(@PathVariable Integer id) {
-		QNADTO dto = new QNADTO();
-		dto.setQNANo(id);
-		try {
-			int cnt = qnaService.deleteArticle(dto);
-			if (cnt == 1) {
-				return new ResponseEntity<String>("/qna/", HttpStatus.OK);
-			} else {
-				return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+	@DeleteMapping("/{qna}") // 같은 유저만
+	public ResponseEntity<?> deleteQna(@PathVariable int qna, @RequestBody QNADTO dto) {
+		UserDTO user = jwtService.getUser("access-token");
+		
+		if (!user.equals(null)) {
+			try {
+				dto.setUserId(user.getUserId());
+				int cnt = qnaService.deleteArticle(dto);
+				if (cnt == 1) {
+					return new ResponseEntity<String>("/qna/", HttpStatus.OK);
+				} else {
+					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return exceptionHandling(e);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return exceptionHandling(e);
 		}
+		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
 	}
 
 	// QNA 댓글 삭제
-	@DeleteMapping("/{qna}/{comment}")
-	public ResponseEntity<?> deleteComment(@PathVariable("qna") Integer qnaNo,
-			@PathVariable("comment") Integer commentNo) {
-		CommentDTO dto = new CommentDTO();
-		dto.setQnaNo(qnaNo);
-		dto.setCommentNo(commentNo);
-		try {
-			int cnt = commentService.deleteComment(dto);
-			if (cnt == 1) {
-				return new ResponseEntity<String>("/qna/", HttpStatus.OK);
-			} else {
-				return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+	@DeleteMapping("/{qna}/comment/{comment}")
+	public ResponseEntity<?> deleteComment(@RequestParam int qna, @RequestParam int comment,
+			@RequestBody CommentDTO dto) {
+		UserDTO user = jwtService.getUser("access-token");
+
+		if (!user.equals(null)) {
+			try {
+				dto.setUserId(user.getUserId());
+				int cnt = commentService.deleteComment(dto);
+				if (cnt == 1) {
+					return new ResponseEntity<String>("/qna/", HttpStatus.OK);
+				} else {
+					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return exceptionHandling(e);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return exceptionHandling(e);
 		}
+		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
 	}
 
 	// QNA 글 내용 수정 요청
-	@PutMapping("/modify/{qna}")
-	public ResponseEntity<?> updateQna(@PathVariable("qna") Integer qnaNo, @RequestBody QNADTO dto) {
-		System.out.println(dto);
-		try {
-			dto.setQNANo(qnaNo);
-			int cnt = qnaService.updateArticle(dto);
-			if (cnt == 1) {
-				return new ResponseEntity<Void>(HttpStatus.OK);
-			} else {
-				return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+	@PutMapping("/{qna}")
+	public ResponseEntity<?> updateQna(@RequestParam int qna, @RequestBody QNADTO dto) {
+		UserDTO user = jwtService.getUser("access-token");
+		
+		if (!user.equals(null)) {
+			try {
+				dto.setUserId(user.getUserId());
+				int cnt = qnaService.updateArticle(dto);
+				if (cnt == 1) {
+					return new ResponseEntity<Void>(HttpStatus.OK);
+				} else {
+					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return exceptionHandling(e);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return exceptionHandling(e);
 		}
+		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
 	}
 
 	// QNA 댓글 내용 수정 요청
-	@PutMapping("/modify/{qna}/{comment}")
-	public ResponseEntity<?> updateComment(@PathVariable("qna") Integer qnaNo,
-			@PathVariable("comment") Integer commentNo, @RequestBody CommentDTO dto) {
-		System.out.println(dto);
-		try {
-			dto.setQnaNo(qnaNo);
-			dto.setCommentNo(commentNo);
-			int cnt = commentService.updateComment(dto);
-			if (cnt == 1) {
-				return new ResponseEntity<Void>(HttpStatus.OK);
-			} else {
-				return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+	@PutMapping("/{qna}/comment/{comment}")
+	public ResponseEntity<?> updateComment(@PathVariable("qna") Integer qna, @PathVariable("comment") Integer comment,
+			@RequestBody CommentDTO dto) {
+		UserDTO user = jwtService.getUser("access-token");
+		
+		if (!user.equals(null)) {
+			try {
+				dto.setUserId(user.getUserId());
+				int cnt = commentService.updateComment(dto);
+				if (cnt == 1) {
+					return new ResponseEntity<Void>(HttpStatus.OK);
+				} else {
+					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return exceptionHandling(e);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return exceptionHandling(e);
 		}
+		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
 	}
 
 	private ResponseEntity<String> exceptionHandling(Exception e) {

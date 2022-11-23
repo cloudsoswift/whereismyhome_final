@@ -26,13 +26,13 @@
 	
 	<delete id="deleteComment" parameterType="CommentDTO">
 		delete from comment
-		where qna_no = #{qnaNo} and comment_no = #{commentNo}
+		where qna_no = #{qnaNo} and comment_no = #{commentNo} and user_id = #{userId}
 	</delete>
 	
 	<update id="updateComment" parameterType="CommentDTO">
 		update comment
 		set content = #{content}
-		where qna_no = #{qnaNo} and comment_no = #{commentNo}
+		where qna_no = #{qnaNo} and comment_no = #{commentNo} and user_id = #{userId}
 	</update>
 
 </mapper>
