@@ -42,6 +42,7 @@ public class ApartController extends HttpServlet {
 	
 	private ApartService service;
 	private JwtService jwtService;
+	
 	@Autowired
 	public ApartController(ApartService service, JwtService jwtService) {
 		this.service = service;
@@ -115,8 +116,9 @@ public class ApartController extends HttpServlet {
 	
 	@PostMapping("/like/{no}")
 	@ResponseBody
-	public ResponseEntity<?> addInterestApart(@PathVariable String no, HttpSession session, HttpServletRequest req) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
+	public ResponseEntity<?> addInterestApart(@PathVariable String no, HttpServletRequest req) {
+		UserDTO user = jwtService.getUser("access-token");
+		
 		if(user != null) {
 			HouseLikeDTO houseLikeDTO = new HouseLikeDTO();
 			houseLikeDTO.setUser_id(user.getUserId());
@@ -136,10 +138,9 @@ public class ApartController extends HttpServlet {
 	
 	@DeleteMapping("/like/{no}")
 	@ResponseBody
-	public ResponseEntity<?> removeInterestApart(@PathVariable String no, HttpServletRequest request) {
-		String token = request.getHeader("access-token");
-		if(token != null && jwtService.checkToken(token)) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
+	public ResponseEntity<?> removeInterestApart(@PathVariable String no) {
+		UserDTO user = jwtService.getUser("access-token");
+		
 		if(user != null) {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("user_id", user.getUserId());

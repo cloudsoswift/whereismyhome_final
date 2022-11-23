@@ -61,7 +61,7 @@ public class BoardController{
 	// 게시판 글 등록 요청
 	@PostMapping("/")
 	public ResponseEntity<?> writePost(@RequestBody BoardDTO board) {
-		UserDTO user = jwtService.getUser();
+		UserDTO user = jwtService.getUser("access-token");
 
 		if(!user.equals(null) && user.getRole() != 1) {
 			try {
@@ -100,7 +100,7 @@ public class BoardController{
 	// 게시판 글 삭제
 	@DeleteMapping("/{id}") // 관리자 아무나
 	public ResponseEntity<?> deletePost(@PathVariable Integer id) {
-		UserDTO user = jwtService.getUser();
+		UserDTO user = jwtService.getUser("access-token");
 		
 		if(!user.equals(null) && user.getRole() != 1) {
 			BoardDTO dto = new BoardDTO();
@@ -125,7 +125,7 @@ public class BoardController{
 	@PutMapping("/{id}") 
 	public ResponseEntity<?> modifyPost(@RequestBody BoardDTO dto) { // boardNo, subject, content
 		System.out.println(dto);
-		UserDTO user = jwtService.getUser();
+		UserDTO user = jwtService.getUser("access-token");
 		if(!user.equals(null) && user.getRole() != 1) {
 			try {
 				dto.setUserId(user.getUserId());

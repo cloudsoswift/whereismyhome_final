@@ -72,7 +72,7 @@ public class QNAController {
 	// QNA 글 등록 요청
 	@PostMapping("/")
 	public ResponseEntity<?> writeQna(@RequestBody QNADTO qna) {
-		UserDTO user = jwtService.getUser();
+		UserDTO user = jwtService.getUser("access-token");
 
 		if (user != null) {
 			try {
@@ -94,7 +94,7 @@ public class QNAController {
 	// QNA 댓글 등록 요청
 	@PostMapping("/{qna}/comment")
 	public ResponseEntity<?> writeComment(@PathVariable("qna") int id, @RequestBody CommentDTO comment) {
-		UserDTO user = jwtService.getUser();
+		UserDTO user = jwtService.getUser("access-token");
 
 		if (user != null) {
 			try {
@@ -148,7 +148,7 @@ public class QNAController {
 	// QNA 글 삭제
 	@DeleteMapping("/{qna}") // 같은 유저만
 	public ResponseEntity<?> deleteQna(@PathVariable int qna, @RequestBody QNADTO dto) {
-		UserDTO user = jwtService.getUser();
+		UserDTO user = jwtService.getUser("access-token");
 		
 		if (!user.equals(null)) {
 			try {
@@ -171,7 +171,7 @@ public class QNAController {
 	@DeleteMapping("/{qna}/comment/{comment}")
 	public ResponseEntity<?> deleteComment(@RequestParam int qna, @RequestParam int comment,
 			@RequestBody CommentDTO dto) {
-		UserDTO user = jwtService.getUser();
+		UserDTO user = jwtService.getUser("access-token");
 
 		if (!user.equals(null)) {
 			try {
@@ -193,7 +193,7 @@ public class QNAController {
 	// QNA 글 내용 수정 요청
 	@PutMapping("/{qna}")
 	public ResponseEntity<?> updateQna(@RequestParam int qna, @RequestBody QNADTO dto) {
-		UserDTO user = jwtService.getUser();
+		UserDTO user = jwtService.getUser("access-token");
 		
 		if (!user.equals(null)) {
 			try {
@@ -216,7 +216,7 @@ public class QNAController {
 	@PutMapping("/{qna}/comment/{comment}")
 	public ResponseEntity<?> updateComment(@PathVariable("qna") Integer qna, @PathVariable("comment") Integer comment,
 			@RequestBody CommentDTO dto) {
-		UserDTO user = jwtService.getUser();
+		UserDTO user = jwtService.getUser("access-token");
 		
 		if (!user.equals(null)) {
 			try {
