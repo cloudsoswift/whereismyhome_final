@@ -44,6 +44,12 @@ const routes = [
         path: "list",
         name: "boardlist",
         component: () => import("@/components/board/BoardList"),
+        beforeEnter: (to, from, next) => {
+          if(to.query.page == undefined){
+            next({name: 'boardlist', query: { page: 1}})
+          } else
+            next()
+        }
       },
       {
         path: "write",
@@ -72,6 +78,12 @@ const routes = [
         path: "list",
         name: "qnalist",
         component: () => import("@/components/qna/QnaList"),
+        beforeEnter: (to, from, next) => {
+          if(to.query.page == undefined){
+            next({name: 'qnalist', query: { page: 1}})
+          } else
+            next()
+        }
       },
       {
         path: "write",

@@ -2,7 +2,7 @@ package com.ssafy.home.qna.model.service;
 
 import java.util.ArrayList;
 
-import com.ssafy.home.BoardParameterDTO;
+import com.ssafy.home.model.BoardParameterDTO;
 import com.ssafy.home.qna.model.QNADTO;
 
 public interface QNAService {

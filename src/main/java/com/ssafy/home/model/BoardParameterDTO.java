@@ -1,4 +1,4 @@
-package com.ssafy.home;
+package com.ssafy.home.model;
 
 
 public class BoardParameterDTO {

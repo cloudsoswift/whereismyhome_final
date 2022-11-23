@@ -21,12 +21,12 @@
                                     name="key" aria-label="검색조건">
                                     <option value="" selected>검색조건</option>
                                     <option value="subject">제목</option>
-                                    <option value="userid">작성자</option>
+                                    <option value="content">내용</option>
                                 </select>
                                 <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" name="word"
-                                        placeholder="검색어..." />
-                                    <button id="btn-search" class="btn btn-dark" type="button">검색</button>
+                                    <input type="text" class="form-control" v-model="word"
+                                        placeholder="검색어..." @keyup.enter="search"/>
+                                    <button id="btn-search" class="btn btn-dark" type="button" @click="search">검색</button>
                                 </div>
                             </form>
                         </div>
@@ -39,18 +39,11 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="row">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item"><a class="page-link" href="#">이전</a></li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">4</a></li>
-                        <li class="page-item"><a class="page-link" href="#">5</a></li>
-                        <li class="page-item"><a class="page-link" href="#">다음</a></li>
-                    </ul>
-                </div>
+                <b-row class="justify-content-md-center">
+                    <b-col lg="8" md="10">
+                        <b-pagination-nav v-model="currentPage" :link-gen="linkGen" :number-of-pages="pageCount" use-router align="center"></b-pagination-nav>
+                    </b-col>
+                </b-row>
             </div>
         </section>
     </div>
@@ -66,9 +59,12 @@ export default {
 
     data() {
         return {
-            naeyong: "이게바로글내용인데니가뭘안다고지껄여?",
             visible: false,
-            qnaList: []
+            qnaList: [],
+            key: "",
+            word: "",
+            currentPage: 1,
+            pageCount: 1,
         };
     },
     computed:{
@@ -76,17 +72,30 @@ export default {
         ...mapGetters(["isLogin"])
     },
     mounted() {
-        this.getQnaList();
+        this.key = this.$route.query.key != undefined ? this.$route.query.key : "";
+        this.word = this.$route.query.word != undefined ? this.$route.query.word : "";
+        this.currentPage = this.$route.query.page;
+        this.getQnaList(this.$route.query.page, {
+            spp: 2,
+            key: this.key,
+            word: this.word,
+        });
     },
     
     methods: {
-        getQnaList() {
-            http.get("/qna/page/1")
+        linkGen(pageNum) {
+            return `?page=${pageNum}&key=${this.key}&word=${this.word}`
+        },
+        getQnaList(page, params) {
+            http.get(`/qna/page/${page}`, {
+                params: params
+            })
             .then(({data, status})=>{
                 switch(status){
                     case 200:
                     // HttpStatus.OK
-                    this.qnaList = data;
+                    this.qnaList = data.list;
+                    this.pageCount = data.pgCount;
                     break;
                 case 406:
                     //HttpStatus.NOT_ACCEPTABLE
@@ -99,8 +108,38 @@ export default {
                     break;
                 }   
             })
+        },
+        search() {
+            this.$router.push({
+                name: 'qnalist',
+                query: {
+                    page:1,
+                    spp:2,
+                    key:this.key,
+                    word:this.word,
+                }
+            }).catch(()=>{});
         }
     },
+    watch:{
+        $route(to){
+            if(to.query.page == undefined){
+                this.$router.push({
+                    name: 'qnalist',
+                    query: {
+                        page:1,
+                    }
+                }).catch(()=>{});
+                return;
+            }
+            this.getQnaList(to.query.page, {
+                spp: 2,
+                key: this.key,
+                word: this.word,
+            });
+            this.currentPage = to.query.page;
+        }
+    }
 };
 </script>
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.ssafy.home.BoardParameterDTO;
+import com.ssafy.home.model.BoardParameterDTO;
 import com.ssafy.home.qna.model.QNADTO;
 
 @Mapper

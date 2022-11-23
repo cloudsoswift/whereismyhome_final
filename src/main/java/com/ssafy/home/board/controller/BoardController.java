@@ -21,9 +21,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.home.BoardParameterDTO;
+import com.ssafy.home.model.BoardParameterDTO;
 import com.ssafy.home.UnAuthorizedException;
 import com.ssafy.home.board.model.BoardDTO;
 import com.ssafy.home.board.model.service.BoardService;
@@ -48,10 +49,10 @@ public class BoardController{
 
 	// 글 목록 가져오기
 	@GetMapping("/page/{pg}")
-	public ResponseEntity<?> boardList(@PathVariable int pg, @RequestBody BoardParameterDTO boardParameterDTO) throws Exception {
+	public ResponseEntity<?> boardList(@PathVariable int pg, BoardParameterDTO boardParameterDTO) throws Exception {
 		boardParameterDTO.setPg(pg);
 		List<BoardDTO> list = service.listBoard(boardParameterDTO);
-		int pgCount = (service.getTotalCount() / boardParameterDTO.getSpp()) + 1;
+		int pgCount = ((service.getTotalCount() - 1) / boardParameterDTO.getSpp()) + 1;
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("list", list);

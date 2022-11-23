@@ -13,10 +13,6 @@
                 <div class="row">
                     <div class="col-md-8 px-5">
                         <div class="clearfix align-content-center">
-                            <img
-                                class="avatar me-2 float-md-start bg-light p-2"
-                                src="https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg"
-                            />
                             <p>
                                 <span class="fw-bold">{{article.userId}}</span> <br />
                                 <span class="text-secondary fw-light"> {{article.registerTime}}</span>

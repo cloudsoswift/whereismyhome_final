@@ -14,14 +14,14 @@
                         <button class="btn btn-outline-danger" @click="deleteQna">삭제</button>
                     </div>
                 </div>
-                <qna-comment-input-item v-if="isLogin" :qnano="qnano"></qna-comment-input-item>
+                <qna-comment-input-item v-if="isLogin" :qnano="qnano" @commentChanged="loadQnaComment"></qna-comment-input-item>
                 <div v-for="(comment, index) in comments" :key="index">
                     <hr>
-                    <qna-comment-item v-bind="comment"></qna-comment-item>
+                    <qna-comment-item v-bind="comment" @commentChanged="loadQnaComment"></qna-comment-item>
                 </div>
             </div>
             <div class="text-center">
-                <a href="#" class="card-link" @click="loadQna"><i :class="visible ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"></i></a>
+                <a href="#" class="card-link" @click="toggleQnaComment"><i :class="visible ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"></i></a>
             </div>
         </div>
     </div>
@@ -47,30 +47,33 @@ export default {
         ...mapState(['user', 'tokens'])
     },
     methods:{
-        loadQna() {
+        toggleQnaComment() {
             if(this.visible){
                 this.visible = !this.visible;
-            } else{
-                http.get(`/qna/${this.qnano}/comment`)
-                .then(({status, data})=>{
-                    switch(status){
-                        case 200:
-                        // HttpStatus.OK
-                        this.comments = data;
-                        this.visible = true;
-                        break;
-                    case 406:
-                        //HttpStatus.NOT_ACCEPTABLE
-                        alert("댓글 로딩에 실패했습니다. 다시 시도해주세요");
-                        break;
-                    case 500:
-                        //HttpStatus.INTERNAL_SERVER_ERROR
-                        alert("서버와 통신중 에러가 발생했습니다.");
-                        this.$router.push("/");
-                        break;
-                    }
-                })
+            } else {
+                this.loadQnaComment();
             }
+        },
+        loadQnaComment() {
+            http.get(`/qna/${this.qnano}/comment`)
+            .then(({status, data})=>{
+                switch(status){
+                    case 200:
+                    // HttpStatus.OK
+                    this.comments = data;
+                    this.visible = true;
+                    break;
+                case 406:
+                    //HttpStatus.NOT_ACCEPTABLE
+                    alert("댓글 로딩에 실패했습니다. 다시 시도해주세요");
+                    break;
+                case 500:
+                    //HttpStatus.INTERNAL_SERVER_ERROR
+                    alert("서버와 통신중 에러가 발생했습니다.");
+                    this.$router.push("/");
+                    break;
+                }
+            })
         },
         modifyQna(){
             this.$router.push({

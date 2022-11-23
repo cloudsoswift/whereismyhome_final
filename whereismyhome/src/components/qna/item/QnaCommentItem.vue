@@ -70,7 +70,8 @@ export default {
                     case 200:
                         // HttpStatus.OK
                         alert("댓글 수정에 성공했습니다.");
-                        this.$router.go(); //새로고침
+                        this.$emit('commentChanged'); //새로고침
+                        this.isModify = !this.isModify;
                         break;
                     case 406:
                         //HttpStatus.NOT_ACCEPTABLE
@@ -109,7 +110,7 @@ export default {
                     case 200:
                         // HttpStatus.OK
                         alert("댓글 삭제에 성공했습니다.");
-                        this.$router.go(); //새로고침
+                        this.$emit('commentChanged'); //새로고침
                         break;
                     case 406:
                         //HttpStatus.NOT_ACCEPTABLE

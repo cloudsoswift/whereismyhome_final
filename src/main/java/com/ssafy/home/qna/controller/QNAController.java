@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.home.BoardParameterDTO;
+import com.ssafy.home.model.BoardParameterDTO;
 import com.ssafy.home.UnAuthorizedException;
 import com.ssafy.home.board.model.BoardDTO;
 import com.ssafy.home.jwt.JwtService;
@@ -59,10 +59,10 @@ public class QNAController {
 
 	// 글 목록 가져오기
 	@GetMapping("/page/{pg}")
-	public ResponseEntity<?> listQna(@PathVariable int pg, @RequestBody BoardParameterDTO boardParameterDTO) throws Exception {
+	public ResponseEntity<?> listQna(@PathVariable int pg, BoardParameterDTO boardParameterDTO) throws Exception {
 		boardParameterDTO.setPg(pg);
 		List<QNADTO> list = qnaService.listQNA(boardParameterDTO);
-		int pgCount = (qnaService.getTotalCount() / boardParameterDTO.getSpp()) + 1;
+		int pgCount = ((qnaService.getTotalCount() - 1) / boardParameterDTO.getSpp()) + 1;
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("list", list);

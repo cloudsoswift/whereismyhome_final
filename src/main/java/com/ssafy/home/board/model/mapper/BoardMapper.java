@@ -3,7 +3,7 @@ package com.ssafy.home.board.model.mapper;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.ssafy.home.BoardParameterDTO;
+import com.ssafy.home.model.BoardParameterDTO;
 import com.ssafy.home.board.model.BoardDTO;
 
 public interface BoardMapper {

@@ -55,7 +55,8 @@ export default {
                 switch(status){
                     case 200:
                     // HttpStatus.OK
-                    this.$router.go(); // 새로고침
+                    this.$emit('commentChanged'); // 새로고침
+                    this.content = "";
                     break;
                 case 403:
                     //HttpStatus.FORBIDDEN
