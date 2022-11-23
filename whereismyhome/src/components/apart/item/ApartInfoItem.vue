@@ -90,7 +90,6 @@ export default {
                                     {
                                         label: '가격',
                                         data: data.map(row => Number(row.dealAmount.replace(',', ''))),
-                                        fill: false,
                                     }
                                     ]
                                 },

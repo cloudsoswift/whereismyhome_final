@@ -73,7 +73,7 @@ export default new Vuex.Store({
     CLEAR_USER(state) {
       state.user = {};
     },
-    SET_USER_TOKENS(state, tokens){
+    SET_USER_TOKENS(state, tokens) {
       state.tokens = tokens;
     },
     CLEAR_USER_TOKENS(state) {
@@ -143,50 +143,55 @@ export default new Vuex.Store({
           console.log(error);
         });
     },
-    login( {commit}, loginInput){
-      return http.post("/user/login", loginInput)
-      .then(({data, status}) => {
-        let userData = {}; 
-        switch(status){
-            case 200:
+    login({ commit }, loginInput) {
+      return http.post("/user/login", loginInput).then(({ data, status }) => {
+        let userData = {};
+        switch (status) {
+          case 200:
             //HttpStatus.OK
-                commit("SET_USER_TOKENS", { 
-                  'accessToken': data['access-token'],
-                  'refreshToken': data['refresh-token'],
-                });
-                userData = JSON.parse(jwtParser(data['access-token']));
-                commit("SET_USER",{
-                  userId: userData.userid,
-                  userName: userData.username,
-                  userPhone: userData.userphone,
-                  userAddress: userData.useraddress,
-                })
-                break;
-            case 406:
+            commit("SET_USER_TOKENS", {
+              accessToken: data["access-token"],
+              refreshToken: data["refresh-token"],
+            });
+            userData = JSON.parse(jwtParser(data["access-token"]));
+            commit("SET_USER", {
+              userId: userData.userid,
+              userName: userData.username,
+              userPhone: userData.userphone,
+              userAddress: userData.useraddress,
+            });
+            break;
+          case 406:
             //HttpStatus.NOT_ACCEPTABLE
-                alert("ID 혹은 비밀번호가 틀렸습니다.");
-                break;
-            case 500:
+            alert("ID 혹은 비밀번호가 틀렸습니다.");
+            break;
+          case 500:
             //HttpStatus.INTERNAL_SERVER_ERROR
-                alert("로그인 중 서버 오류가 발생했습니다.");
-                this.$router.push("/");
-                break;
+            alert("로그인 중 서버 오류가 발생했습니다.");
+            this.$router.push("/");
+            break;
         }
         return status;
-      })
+      });
     },
-    logout(){
-      return http.get("/user/logout", {
-        headers: {
-          'access-token': this.state.tokens.accessToken,
-        }
-      })
-      .then((status)=>{
+    logout() {
+      return http
+        .get("/user/logout", {
+          headers: {
+            "access-token": this.state.tokens.accessToken,
+          },
+        })
+        .then((status) => {
           this.commit("CLEAR_USER");
           this.commit("CLEAR_USER_TOKENS");
           return status;
-      })
-    }
+        })
+        .catch((status) => {
+          this.commit("CLEAR_USER");
+          this.commit("CLEAR_USER_TOKENS");
+          return status;
+        });
+    },
   },
   modules: {},
   plugins: [

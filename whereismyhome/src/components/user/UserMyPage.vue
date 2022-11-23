@@ -137,7 +137,7 @@ export default {
         };
     },
     computed:{
-        ...mapState["user"],
+        ...mapState(["user","tokens"]),
         interestArea() {
             return this.list.filter((data)=>{
                 return data.sidoname != null
@@ -150,7 +150,11 @@ export default {
         }
     },
     created() {
-        http.get("/user/mypage",{withCredentials: true})
+        http.get("/user/mypage",{
+            headers: {
+            "access-token": this.tokens.accessToken,
+          }
+        })
         // .then((response)=>console.log(response));
         .then(({data, status})=>{
             switch(status){
@@ -191,8 +195,8 @@ export default {
                     alert("회원정보 수정에 성공했습니다.");
                     this.$router.go(); // 새로고침
                     break;
-                case 403:
-                    //HttpStatus.FORBIDDEN
+                case 401:
+                    //HttpStatus.UNAUTHORIZED
                     alert("로그인이 만료되었습니다.");
                     this.$router.push("/user/login");
                     break;
@@ -210,7 +214,11 @@ export default {
             )
         },
         deleteUser() {
-            http.delete("/user/",{withCredentials: true})
+            http.delete("/user/",{
+            headers: {
+            "access-token": this.tokens.accessToken,
+          }
+        })
             .then(({status})=>{
                 switch(status){
                     case 200:
@@ -218,6 +226,7 @@ export default {
                     alert("회원 탈퇴에 성공했습니다. 이용해주셔서 감사합니다.");
                     this.$router.push("/");
                     this.$store.commit("CLEAR_USER");
+                    this.$store.commit("CLEAR_USER_TOKENS");
                     break;
                 case 403:
                     //HttpStatus.FORBIDDEN

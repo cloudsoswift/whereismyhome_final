@@ -9,7 +9,7 @@ public interface JwtService {
 	<T> String createAccessToken(UserDTO loginUser);
 	<T> String createRefreshToken(UserDTO loginUser);
 	<T> String create(UserDTO loginUser, String subject, long expir);
-	Map<String, Object> get(String key);
+	Map<String, Object> get();
 	String getUserId();
 	boolean checkToken(String jwt);
 	

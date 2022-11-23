@@ -132,7 +132,7 @@ public class UserController{
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = HttpStatus.ACCEPTED;
 		try {
-			userService.deleRefreshToken((String)jwtService.get("").get("userid"));
+			userService.deleRefreshToken((String)jwtService.get().get("userid"));
 			resultMap.put("message", SUCCESS);
 			status = HttpStatus.ACCEPTED;
 		} catch (Exception e) {
@@ -195,9 +195,15 @@ public class UserController{
 	}
 	
 	@GetMapping("/mypage")
-	public ResponseEntity<?> mypage(HttpSession session) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
-		if(user != null) {
+	public ResponseEntity<?> mypage(HttpServletRequest request) {
+		String token = request.getHeader("access-token");
+		if(token != null && jwtService.checkToken(token)) {
+			Map<String, Object> decoded = jwtService.get();
+			UserDTO user = new UserDTO();
+			user.setUserId((String) decoded.get("userid"));
+			user.setUserName((String)decoded.get("username"));
+			user.setUserPhone((String)decoded.get("userphone"));
+			user.setUserAddress((String)decoded.get("useraddress"));
 			Map<String, Object> resultMap = new HashMap<String, Object>();
 			resultMap.put("user", user);
 			try {
@@ -209,24 +215,25 @@ public class UserController{
 				return exceptionHandling(e);
 			}			
 		}
-		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+		return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 	}
 	
 	// 유저 정보 수정
 	@PutMapping("/")
 	@ResponseBody
-	public ResponseEntity<?> modifyUser(@RequestBody Map<String, String> map, HttpSession session, Model model) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
-		if(user != null) {
+	public ResponseEntity<?> modifyUser(@RequestBody Map<String, String> map, HttpServletRequest request) {
+		String token = request.getHeader("access-token");
+		if(token != null && jwtService.checkToken(token)) {
+			UserDTO user = new UserDTO();
 			user.setUserPassword(map.get("Password"));
 			user.setUserName(map.get("Name"));
 			user.setUserAddress(map.get("Address"));
 			user.setUserPhone(map.get("Phone"));
+			user.setUserId((String) jwtService.get().get("userid"));
 			int cnt = 0;
 			try {
 				cnt = userService.updateUser(user);
 				if(cnt == 1) {
-					session.setAttribute("userInfo", user);
 					return new ResponseEntity<Integer>(cnt, HttpStatus.OK);
 				} else {
 					return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
@@ -236,18 +243,23 @@ public class UserController{
 				return exceptionHandling(e);
 			}			
 		}
-		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+		return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 	}
 	
 	// 유저 탈퇴
 	@DeleteMapping("/")
 	@ResponseBody
-	public ResponseEntity<?> deleteUser(HttpSession session, Model model) {
-		UserDTO user = (UserDTO) session.getAttribute("userInfo");
-		if(user != null) {
+	public ResponseEntity<?> deleteUser(HttpServletRequest request, Model model) {
+		String token = request.getHeader("access-token");
+		if(token != null && jwtService.checkToken(token)) {
+			Map<String, Object> decoded = jwtService.get();
+			UserDTO user = new UserDTO();
+			user.setUserId((String) decoded.get("userid"));
+			user.setUserName((String)decoded.get("username"));
+			user.setUserPhone((String)decoded.get("userphone"));
+			user.setUserAddress((String)decoded.get("useraddress"));
 			try {
 				int cnt = userService.deleteUser(user);
-				session.invalidate();
 				if(cnt == 1) {
 					return new ResponseEntity<Integer>(cnt, HttpStatus.OK);
 				} else {
@@ -258,7 +270,7 @@ public class UserController{
 				return exceptionHandling(e);
 			}
 		}
-		return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+		return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 		
 	}
 	
