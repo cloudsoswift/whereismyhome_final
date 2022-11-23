@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.home.board.model.BoardDTO;
+import com.ssafy.home.board.model.BoardParameterDTO;
 import com.ssafy.home.board.model.mapper.BoardMapper;
 
 @Service
@@ -19,8 +20,10 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public ArrayList<BoardDTO> listBoard() throws Exception {
-		return mapper.listBoard();
+	public ArrayList<BoardDTO> listBoard(BoardParameterDTO boardParameterDTO) throws Exception {
+		int start = boardParameterDTO.getPg() == 0 ? 0 : (boardParameterDTO.getPg() - 1) * boardParameterDTO.getSpp();
+		boardParameterDTO.setStart(start);
+		return mapper.listBoard(boardParameterDTO);
 	}
 	@Override
 	public int writeArticle(BoardDTO dto) throws Exception {
