@@ -31,13 +31,13 @@
 	
 	<delete id="deleteArticle" parameterType="QNADTO">
 		delete from qna
-		where qna_no = #{qnaNo}
+		where qna_no = #{qnaNo} and user_id = #{userId}
 	</delete>
 	
 	<update id="updateArticle" parameterType="QNADTO">
 		update qna
 		set subject = #{subject}, content = #{content}
-		where qna_no = #{qnaNo}
+		where qna_no = #{qnaNo} and user_id = #{userId}
 	</update>
 
 </mapper>
