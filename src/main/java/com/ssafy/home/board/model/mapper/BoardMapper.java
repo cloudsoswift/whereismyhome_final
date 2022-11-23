@@ -4,9 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.ssafy.home.board.model.BoardDTO;
+import com.ssafy.home.board.model.BoardParameterDTO;
 
 public interface BoardMapper {
-	ArrayList<BoardDTO> listBoard() throws SQLException;
+	ArrayList<BoardDTO> listBoard(BoardParameterDTO boardParameterDTO) throws SQLException;
 
 	int writeArticle(BoardDTO dto) throws SQLException;
 

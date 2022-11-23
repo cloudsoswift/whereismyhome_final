@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.home.UnAuthorizedException;
 import com.ssafy.home.board.model.BoardDTO;
+import com.ssafy.home.board.model.BoardParameterDTO;
 import com.ssafy.home.board.model.service.BoardService;
 import com.ssafy.home.board.model.service.BoardServiceImpl;
 import com.ssafy.home.jwt.JwtService;
@@ -44,9 +45,9 @@ public class BoardController{
 	}
 
 	// 글 목록 가져오기
-	@GetMapping("/page/{idx}")
-	public ResponseEntity<?> boardList(@PathVariable int idx) throws Exception {
-		List<BoardDTO> list = service.listBoard();
+	@GetMapping("/page")
+	public ResponseEntity<?> boardList(BoardParameterDTO boardParameterDTO) throws Exception {
+		List<BoardDTO> list = service.listBoard(boardParameterDTO);
 
 		try {
 			if (list != null)
