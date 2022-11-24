@@ -21,6 +21,8 @@ public interface UserService {
 	public void deleRefreshToken(String userid) throws Exception;
 	
 	public UserDTO userInfo(String userid) throws Exception;
+	
+	int idCheck(String id) throws Exception;
 	///////////////////////
 	
 	int updateUser(UserDTO dto) throws Exception;

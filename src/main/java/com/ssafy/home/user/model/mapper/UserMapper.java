@@ -22,6 +22,8 @@ public interface UserMapper {
 	public void deleteRefreshToken(Map<String, String> map) throws SQLException;
 	
 	public UserDTO userInfo(String userid) throws SQLException;
+	
+	int idCheck(String id) throws SQLException;
 	///////
 	
 	int updateUser(UserDTO dto) throws SQLException;

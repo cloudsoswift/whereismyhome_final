@@ -58,6 +58,11 @@ public class UserServiceImpl implements UserService {
 	public UserDTO userInfo(String userid) throws Exception {
 		return mapper.userInfo(userid);
 	}
+	
+	@Override
+	public int idCheck(String id) throws Exception {
+		return mapper.idCheck(id);
+	}
 	//////////////////////////////////
 	
 //	@Override
@@ -82,6 +87,5 @@ public class UserServiceImpl implements UserService {
 		list.addAll(mapper.getUserInterestApart(id));
 		return list;
 	}
-	
 
 }

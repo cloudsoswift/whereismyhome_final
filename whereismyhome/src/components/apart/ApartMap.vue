@@ -84,7 +84,6 @@ export default {
                     <div class="card" style="min-width: 18rem">
                     <h5 class="card-header mb-3 text-center">${message.apartmentName}</h5>
                     <div class="card-body text-center">
-                        <h5 class="card-title mb-3 text-center">건축년도 : ${message.buildYear}</h5>
                         <h5 class="card-title mb-3 text-center">주변 상권 검색</h5>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="checkedValue" id="convenience" value="편의점">

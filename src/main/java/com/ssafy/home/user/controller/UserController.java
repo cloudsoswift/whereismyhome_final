@@ -265,7 +265,20 @@ public class UserController{
 		return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
 		
 	}
-	
+	@GetMapping("/idcheck")
+	public ResponseEntity<?> idCheck(@RequestParam String id) {
+		try {
+			int cnt = userService.idCheck(id);
+			if(cnt == 0) {
+				return new ResponseEntity<Integer>(cnt, HttpStatus.OK);				
+			} else {
+				return new ResponseEntity<Void>(HttpStatus.CONFLICT);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return exceptionHandling(e);
+		}
+	}
 	@ResponseBody
 	private ResponseEntity<String> exceptionHandling(Exception e) {
 		return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
