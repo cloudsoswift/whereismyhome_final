@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.resource.HttpResource;
 
 import com.ssafy.home.UnAuthorizedException;
+import com.ssafy.home.apart.model.CommercialDTO;
 import com.ssafy.home.apart.model.HouseDTO;
 import com.ssafy.home.apart.model.HouseLikeDTO;
 import com.ssafy.home.apart.model.service.ApartService;
@@ -74,6 +75,29 @@ public class ApartController extends HttpServlet {
 			System.out.println(list);
 			if(list != null) {
 				return new ResponseEntity<List<HouseDTO>>(list, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return exceptionHandling(e);
+		}
+	}
+	
+	@GetMapping("/list/{lat}/{lng}/{info}")
+	@ResponseBody
+	public ResponseEntity<?> searchCommercial(@PathVariable String lat, @PathVariable String lng, @PathVariable String info, 
+			HttpServletRequest request) {
+		Map<String, String> map = new HashMap<String, String>();
+		List<CommercialDTO> list = new ArrayList<CommercialDTO>();
+		map.put("lat", lat);
+		map.put("lng", lng);
+		map.put("info", info);
+		try {
+			list = service.searchCommercial(map);
+			System.out.println(list);
+			if(list != null) {
+				return new ResponseEntity<List<CommercialDTO>>(list, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 			}

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.home.apart.model.CommercialDTO;
 import com.ssafy.home.apart.model.HouseDTO;
 import com.ssafy.home.apart.model.HouseLikeDTO;
 import com.ssafy.home.apart.model.mapper.ApartMapper;
@@ -38,6 +39,11 @@ public class ApartServiceImpl implements ApartService {
 	@Override
 	public void deleteInterestApart(Map map) throws Exception {
 		apartMapper.deleteInterestApart(map);
+	}
+
+	@Override
+	public ArrayList<CommercialDTO> searchCommercial(Map map) throws Exception {
+		return apartMapper.searchCommercial(map);
 	}
 	
 

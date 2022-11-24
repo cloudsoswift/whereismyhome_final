@@ -15,6 +15,14 @@
 		where i.dongCode = #{code}
 		group by aptCode;
 	</select>
+	
+	<select id="searchCommercial" parameterType="Map" resultType="CommercialDTO">
+		SELECT i.commercial_no, i.name, i.branch, i.info, i.roomNo, i.dongNo, i.floorNo, i.address, i.lat, i.lng
+		from (select *
+			  from commercial
+			  where (6371 * acos( cos( radians(#{lat}) ) * cos( radians( `lat` ) ) * cos( radians( `lng` ) - radians(#{lng}) ) + sin( radians(#{lat}) ) * sin( radians( `lat` ) ) ) ) <= 2) AS i
+		WHERE i.info like CONCAT('%',#{info},'%')
+	</select>
 
 	<select id="searchDeal" parameterType="Map" resultType="Map">
 		select DISTINCT d.dealAmount,
