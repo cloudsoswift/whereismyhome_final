@@ -52,7 +52,7 @@
                         </div>
 
                         <div class="text-center mt-3">
-                            <button id="btn" @click="signUp">SignUp</button>
+                            <button id="btn btn-outline-primary" @click="signUp">SignUp</button>
                         </div>
                     </div>
                 </div>

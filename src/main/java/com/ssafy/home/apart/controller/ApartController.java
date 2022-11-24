@@ -84,7 +84,7 @@ public class ApartController extends HttpServlet {
 		}
 	}
 	
-	@GetMapping("/list/{lat}/{lng}/{info}")
+	@GetMapping("/list/{lat:.+}/{lng:.+}/{info}")
 	@ResponseBody
 	public ResponseEntity<?> searchCommercial(@PathVariable String lat, @PathVariable String lng, @PathVariable String info, 
 			HttpServletRequest request) {

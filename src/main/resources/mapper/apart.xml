@@ -20,8 +20,9 @@
 		SELECT i.commercial_no, i.name, i.branch, i.info, i.roomNo, i.dongNo, i.floorNo, i.address, i.lat, i.lng
 		from (select *
 			  from commercial
-			  where (6371 * acos( cos( radians(#{lat}) ) * cos( radians( `lat` ) ) * cos( radians( `lng` ) - radians(#{lng}) ) + sin( radians(#{lat}) ) * sin( radians( `lat` ) ) ) ) <= 2) AS i
+			  where (6371 * acos( cos( radians(#{lat}) ) * cos( radians( `lat` ) ) * cos( radians( `lng` ) - radians(#{lng}) ) + sin( radians(#{lat}) ) * sin( radians( `lat` ) ) ) ) <![CDATA[<= 1]]>) AS i
 		WHERE i.info like CONCAT('%',#{info},'%')
+			or i.industry like CONCAT('%',#{info},'%') or i.info2 like CONCAT('%',#{info},'%')
 	</select>
 
 	<select id="searchDeal" parameterType="Map" resultType="Map">

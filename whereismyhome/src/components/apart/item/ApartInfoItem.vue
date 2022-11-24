@@ -3,6 +3,7 @@
         <b-card class="shadow-sm mb-2">
             <a href="#none" @click="goCenter"><h4 class="card-title">{{apartmentName}}</h4></a>
             <b-card-text>{{roadName}}</b-card-text>
+            <b-card-sub-title text-start>준공: {{buildYear}} 년</b-card-sub-title>
             <button type="button" class="btn p-0 position-absolute top-0 end-0" style="width: 30px; height: 30px;" @click.prevent="InterestApart" v-if="isLogin">
                 <font-awesome-icon :icon="!isBookmark ? 'fa-regular fa-bookmark' :'fa-solid fa-bookmark'" :data-code="aptCode"></font-awesome-icon>
             </button>
@@ -13,7 +14,26 @@
                 <div>
                     <b-badge v-for="(area, index) in areas" :key="index" class="mx-1 text-bg-primary" href="#none" @click="loadDeal(area)">{{area}}m²</b-badge>
                 </div>
-                <canvas id="chartplace" width="100%" height="100%" v-if="isAreaChosen"></canvas>
+                <div>
+                    <div v-if="isAreaChosen">
+                        <table class="table table-sm rounded-4 shadow-sm mb-2 caption-top">
+                            <caption class="text-center">최근 거래 내역</caption>
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">거래 일</th>
+                                    <th scope="col">거래 금액</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr v-for="(deal, index) in leastDeals" :key="index">
+                                    <td>{{deal.date}}</td>
+                                    <td>{{deal.dealAmount}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <canvas id="chartplace" width="100%" height="100%"></canvas>
+                    </div>
+                </div>
             </b-collapse>
         </b-card>
     </div>
@@ -30,6 +50,7 @@ export default {
     data() {
         return {
             areas: [],
+            leastDeals: [],
             myChart: undefined,
             isAreaChosen: false,
             isBookmark: this.like_id > 0 ? true : false,
@@ -85,6 +106,8 @@ export default {
                 switch(status){
                     case 200:
                         console.log(data);
+                        this.leastDeals = data.slice(-5);
+                        this.leastDeals.reverse();
                         if(data.length != 0){
                             if(this.myChart != undefined) 
                                 this.myChart.destroy();
