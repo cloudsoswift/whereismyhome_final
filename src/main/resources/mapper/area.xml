@@ -10,15 +10,15 @@
 		where right(dongcode, 8) = '00000000'
 	</select>
 	
-	<select id="getGugun" parameterType="String" resultType="Map">
+	<select id="getGugun" parameterType="Map" resultType="Map">
 		select  d.gugunName, left(d.dongCode, 5) guguncode, ifnull(i.interest_no, -1) interest_no
 		from dongcode as d 
-				left join interest as i 
+				left join (select * from interest where user_id = #{user_id}) as i 
 		on d.dongcode = i.dongcode
 		where right(d.dongcode,5) = '00000' 
 				and left(d.dongcode,2) = #{code}
 				and d.gugunname is not null
-		order by interest_no
+		order by interest_no desc
 	</select>
 	
 	<select id="getDong" parameterType="String" resultType="Map">

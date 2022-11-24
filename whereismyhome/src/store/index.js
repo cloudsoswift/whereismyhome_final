@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import http from "@/util/http";
 import createPersistedState from "vuex-persistedstate";
 import jwtParser from "@/util/jwtParser";
+import router from "@/router";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -109,15 +110,30 @@ export default new Vuex.Store({
           console.log(error);
         });
     },
-    getGugun({ commit }, regCode) {
+    getGugun({ commit, dispatch }, regCode) {
       http
-        .get(`/area/gugun/${regCode}`)
+        .get(`/area/gugun/${regCode}`, {
+          headers: {
+            "access-token": this.state.tokens.accessToken,
+          },
+        })
         .then(({ data }) => {
           // console.log(data);
           commit("SET_GUGUN_LIST", data);
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(async ({ response }) => {
+          switch (response.status) {
+            case 401:
+              //HttpStatus.UNAUTHORIZED
+              await dispatch("tokenRefresh");
+              if (!this.isLogin) {
+                alert("로그인이 만료되었습니다.");
+                router.push("/user/login");
+              } else {
+                alert("토큰을 갱신했습니다. 다시 시도해주세요");
+              }
+              break;
+          }
         });
     },
     getDong({ commit }, regCode) {
@@ -131,20 +147,39 @@ export default new Vuex.Store({
           console.log(error);
         });
     },
-    getHouseList({ commit }, input) {
+    getHouseList({ commit, getters, state, dispatch }, input) {
+      let options = {};
+      if (getters.isLogin == true) {
+        options = {
+          headers: {
+            "access-token": state.tokens.accessToken,
+          },
+        };
+      }
       http
-        .get(`/apart/list/${input.addr}`)
+        .get(`/apart/list/${input.addr}`, options)
         .then(({ data }) => {
           console.log(data);
           commit("SET_HOUSE_LIST", data);
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(async ({ response }) => {
+          switch (response.status) {
+            case 401:
+              //HttpStatus.UNAUTHORIZED
+              await dispatch("tokenRefresh");
+              if (!getters.isLogin) {
+                alert("로그인이 만료되었습니다.");
+                router.push("/user/login");
+              } else {
+                dispatch("getHouseList", { commit: commit, getters: getters, state: state, dispatch: dispatch }, input);
+              }
+              break;
+          }
         });
     },
     getBoardList({ commit }, params) {
       http
-        .get(`/board/page/${params[0]}`, {params: params[1]})
+        .get(`/board/page/${params[0]}`, { params: params[1] })
         .then(({ data }) => {
           // console.log(commit, response);
           commit("SET_BOARD_LIST", data.list);

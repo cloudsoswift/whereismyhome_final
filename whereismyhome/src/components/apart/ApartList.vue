@@ -32,8 +32,8 @@
                                                     <div v-for="(item, index) in guguns" :key="index">
                                                         <b-list-group-item button v-b-toggle="`${item.value}`" :value="item.value" @click="dongSearch">{{item.text}}
                                                             
-                                                        <button type="button" class="btn p-0" style="width: 30px; height: 30px;" :data-code="item.value">
-                                                            <font-awesome-icon :icon="item.interest_no < 0 ? 'fa-regular fa-bookmark' :'fa-solid fa-bookmark'" @click.prevent="InterestArea" :data-code="item.value"></font-awesome-icon>
+                                                        <button type="button" class="btn p-0" style="width: 30px; height: 30px;" @click.stop.prevent="InterestArea" :data-code="item.value" :data-no="item.interest_no">
+                                                            <font-awesome-icon :icon="item.interest_no < 0 ? 'fa-regular fa-bookmark' :'fa-solid fa-bookmark'" :data-code="item.value" :data-no="item.interest_no"></font-awesome-icon>
                                                         </button>
                                                         </b-list-group-item>
                                                         <b-collapse v-if="gugun == item.value" :id="item.value" accordion="gugun">
@@ -77,7 +77,7 @@ export default {
     name: 'ApartList',
     data() {
         return {
-            // 동코드 저장요
+            // 동코드 저장용
             sido:"",
             gugun:"",
             dong:"",
@@ -90,7 +90,7 @@ export default {
         };
     },
     computed: {
-        ...mapState(["sidos", "guguns", "dongs", "houses"]),
+        ...mapState(["sidos", "guguns", "dongs", "houses", "tokens"]),
     },
     created() {
 
@@ -101,6 +101,15 @@ export default {
         this.CLEAR_DONG_LIST();
         this.CLEAR_APT_LIST();
         this.getSido();
+        if(this.$route.params.dongCode != undefined){
+            let param = {
+                addr: this.$route.params.dongCode,
+            }
+            this.addr = this.$route.params.sidoName + " " + this.$route.params.gugunName;
+            this.getHouseList(param).then(()=>{
+                this.tabIndex = 1;
+            });
+        }
     },
 
     methods: {
@@ -148,29 +157,65 @@ export default {
         },
         InterestArea(event) {
             const dongCode = event.target.dataset.code;
+            console.log(event.target);
+            console.log(event.target.dataset.code);
+            console.log(dongCode);
             if(dongCode == ""){
                 alert("지역을 선택 후 다시 시도해주세요.");
                 return;
             }
-            event.target.classList.toggle('fa-solid')
-            event.target.classList.toggle('fa-regular')
-            if(event.target.dataset.contains("bi-star-fill"))
-            http.post(`/area/like/${dongCode}`, {}, {withCredentials: true})
-            .then(({status})=>{
+            const options = {
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
+            }
+            if(event.target.dataset.no > 0){
+                // 북마크임 -> 북마크 삭제
+                http.delete(`/area/like/${dongCode}`, options)
+                .then(({status})=>{
+                    switch(status){
+                        case 200:
+                        // HttpStatus.OK
+                        this.CLEAR_GUGUN_LIST();
+                        this.getGugun(this.sido);
+                        break;
+                    case 403:
+                        //HttpStatus.FORBIDDEN
+                        alert("북마크 삭제에 실패했습니다. 다시 시도해주세요");
+                        break;
+                    case 500:
+                        //HttpStatus.INTERNAL_SERVER_ERROR
+                        alert("서버와 통신중 에러가 발생했습니다.");
+                        this.$router.push("/");
+                        break;
+                    }
+                }).catch(async({response})=>{
+                    switch(response.status){
+                        case 401:
+                            //HttpStatus.UNAUTHORIZED
+                            await this.$store.dispatch("tokenRefresh")
+                            if(!this.isLogin){
+                                alert("로그인이 만료되었습니다.");
+                                this.$router.push("/user/login");
+                            } else {
+                                alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                            }
+                            break;
+                    }
+                })
+            } else {
+                // 북마크 아님 -> 북마크 등록
+                http.post(`/area/like/${dongCode}`, {}, options)
+                            .then(({status})=>{
                 switch(status){
                     case 200:
                     // HttpStatus.OK
-                    alert("관심지역 등록에 성공했습니다.");
-                    
+                    this.CLEAR_GUGUN_LIST();
+                    this.getGugun(this.sido);
                     break;
                 case 403:
                     //HttpStatus.FORBIDDEN
-                    alert("로그인이 필요합니다.");
-                    this.$router.push("/user/login");
-                    break;
-                case 406:
-                    //HttpStatus.NOT_ACCEPTABLE
-                    alert("관심지역 등록에 실패했습니다. 다시 시도해주세요");
+                    alert("북마크 삭제에 실패했습니다. 다시 시도해주세요");
                     break;
                 case 500:
                     //HttpStatus.INTERNAL_SERVER_ERROR
@@ -178,68 +223,22 @@ export default {
                     this.$router.push("/");
                     break;
                 }
-            })
+                }).catch(async({response})=>{
+                    switch(response.status){
+                        case 401:
+                            //HttpStatus.UNAUTHORIZED
+                            await this.$store.dispatch("tokenRefresh")
+                            if(!this.isLogin){
+                                alert("로그인이 만료되었습니다.");
+                                this.$router.push("/user/login");
+                            } else {
+                                alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                            }
+                            break;
+                    }
+                })
+            }
         },
-        InterestApart(event){
-            const dealNo = event.target.dataset.no;
-            console.log(dealNo)
-            if(dealNo == undefined) {
-                alert("잠시후 시도해주세요")
-                return;
-            }
-            if(event.target.classList.contains("bi-star-fill")){
-                // DELETE
-                http.delete(`/apart/like/${dealNo}`, {withCredentials: true})
-                .then(({status})=>{
-                switch(status){
-                    case 200:
-                    // HttpStatus.OK
-                    alert("관심매물 삭제에 성공했습니다.");
-                    break;
-                case 403:
-                    //HttpStatus.FORBIDDEN
-                    alert("로그인이 필요합니다.");
-                    this.$router.push("/user/login");
-                    break;
-                case 406:
-                    //HttpStatus.NOT_ACCEPTABLE
-                    alert("관심매물 삭제에 실패했습니다. 다시 시도해주세요");
-                    break;
-                case 500:
-                    //HttpStatus.INTERNAL_SERVER_ERROR
-                    alert("서버와 통신중 에러가 발생했습니다.");
-                    this.$router.push("/");
-                    break;
-                }
-            })
-            } else{
-                // POST
-                http.post(`/apart/like/${dealNo}`, {}, {withCredentials: true})
-                .then(({status})=>{
-                switch(status){
-                    case 200:
-                    // HttpStatus.OK
-                    alert("관심매물 등록에 성공했습니다.");
-                    this.isLikedArea = true;
-                    break;
-                case 403:
-                    //HttpStatus.FORBIDDEN
-                    alert("로그인이 필요합니다.");
-                    this.$router.push("/user/login");
-                    break;
-                case 406:
-                    //HttpStatus.NOT_ACCEPTABLE
-                    alert("관심매물 등록에 실패했습니다. 다시 시도해주세요");
-                    break;
-                case 500:
-                    //HttpStatus.INTERNAL_SERVER_ERROR
-                    alert("서버와 통신중 에러가 발생했습니다.");
-                    this.$router.push("/");
-                    break;
-                }
-            })
-            }
-        }
     }   
 }
 </script>

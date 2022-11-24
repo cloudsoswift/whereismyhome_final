@@ -57,8 +57,6 @@ export default {
                 lon = position.coords.longitude; // 경도
 
                 var myLatLng = new kakao.maps.LatLng(lat, lon) // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
-                // 마커와 인포윈도우를 표시합니다
-                this.displayMarker(myLatLng, "");
 
                 // 지도 중심좌표를 접속위치로 변경합니다
                 this.map.setCenter(myLatLng);
@@ -113,14 +111,29 @@ export default {
                 infowindow.close();
             });
         },
+        // displayOverlay(position, message){
+        //     var content = `<div class="tooltip b-tooltip bs-tooltip-top bs-tooltip-top-docs" role="tooltip">
+        //      <div class="arrow" style="left:calc(50% - 6px)">
+        //      </div> 
+        //      <div class="tooltip-inner">${message.apartmentName}</div> 
+        //      </div>`;
+
+        //     // 커스텀 오버레이를 생성합니다
+        //     var customOverlay = new kakao.maps.CustomOverlay({
+        //         position: position,
+        //         content: content   
+        //     });
+        //     this.markerList.push(customOverlay);
+        //     customOverlay.setMap(this.map);
+        // },
         mapMarker(address, data) {
             this.hideMarker();
             // 주소-좌표 변환 객체를 생성합니다
             var geocoder = new kakao.maps.services.Geocoder();
             // 마커 이미지의 이미지 주소입니다
-            var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+            var imageSrc = require("@/assets/img/marker.png");
             // 마커 이미지의 이미지 크기 입니다
-            var imageSize = new kakao.maps.Size(24, 35);
+            var imageSize = new kakao.maps.Size(48, 48);
             // 마커 이미지를 생성합니다
             var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
             // 검색 주소 기준으로 지도 중심 이동
@@ -133,6 +146,7 @@ export default {
             // 매매 정보 주소를 좌표로 변환하기
             data.forEach((apt) => {
                 this.displayMarker(new kakao.maps.LatLng(apt.lat, apt.lng), apt, markerImage);
+                // this.displayOverlay(new kakao.maps.LatLng(apt.lat, apt.lng), apt);
             });
 
         },

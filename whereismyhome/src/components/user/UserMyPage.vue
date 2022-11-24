@@ -77,7 +77,7 @@
 					</thead>
 					<tbody id="interRegion">
                         <tr v-for="(item, index) in interestArea" :key="index">
-                            <td>{{item.sidoname}}</td>
+                            <td>{{item.sidoName}}</td>
                             <td>{{item.gugunName}}</td>
                         </tr>
 					</tbody>
@@ -89,7 +89,7 @@
 					<div class="info">
 						<div class="email">
 							<i class="bi bi-geo-alt"></i>
-							<h4>관심 매물</h4>
+							<h4>관심 아파트</h4>
 						</div>
 					</div>
 				</div>
@@ -98,19 +98,19 @@
 					<thead>
 						<tr>
 							<th>아파트이름</th>
-							<th>면적</th>
-							<th>층</th>
-							<th>거래금액</th>
-							<th>거래날짜</th>
+							<th>주소</th>
+							<th>건축년도</th>
 						</tr>
 					</thead>
 					<tbody id="interApt">
                         <tr v-for="(item, index) in interestApart" :key="index">
-                            <td>{{item.apartmentName}}</td>
-                            <td>{{item.area}} m<sup>2</sup></td>
-                            <td>{{item.floor}}층</td>
-                            <td>{{item.dealAmount}}원</td>
-                            <td>{{item.date}}</td>
+                            
+                                <td><router-link :to="{name: 'apart', params:{dongCode: item.dongCode, sidoName: item.sidoName, gugunName: item.gugunName}}">
+                                    {{item.apartmentName}}
+                                    </router-link></td>
+                                <td>{{item.sidoName}} {{item.gugunName}} {{item.roadName}} </td>
+                                <td>{{item.buildYear}}</td>
+                            
                         </tr>
 					</tbody>
 				</table>
@@ -137,12 +137,12 @@ export default {
         ...mapState(["user","tokens"]),
         interestArea() {
             return this.list.filter((data)=>{
-                return data.sidoname != null
+                return data.roadName == null
             })
         },
         interestApart(){
             return this.list.filter((data)=>{
-                return data.apartmentName != null
+                return data.roadName != null
             })
         }
     },
@@ -292,6 +292,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+a {
+  color: #e43c5c;
+  text-decoration: none;
+}
 </style>

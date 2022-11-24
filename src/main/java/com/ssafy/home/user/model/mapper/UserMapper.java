@@ -30,5 +30,5 @@ public interface UserMapper {
 	
 	ArrayList<UserInterestDTO> getUserInterestArea(String id) throws SQLException;
 	
-	ArrayList<UserInterestDTO> getUserInterestDeal(String id) throws SQLException;
+	ArrayList<UserInterestDTO> getUserInterestApart(String id) throws SQLException;
 }

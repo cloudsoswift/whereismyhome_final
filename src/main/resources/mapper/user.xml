@@ -73,14 +73,15 @@
 		where i.user_id = #{id} and d.dongname is not null
 	</select>
 	
-	<select id="getUserInterestDeal" parameterType="String" resultType="UserInterestDTO">
-		select i.apartmentName, b.dealAmount, b.area, b.floor, 
-				concat(b.dealYear,'.', b.dealMonth,'.', b.dealDay) date
-		from housedeal as b 
-			left join houseinfo as i
-					on b.aptCode = i.aptCode 
-			left join houselike as l
-					on b.no = l.aptCode
+	<select id="getUserInterestApart" parameterType="String" resultType="UserInterestDTO">
+		select i.apartmentName, d.sidoName, d.gugunName, d.dongCode, ( concat(roadName, ' ', TRIM(LEADING '0' from roadNameBonbun),
+		 IF(TRIM(LEADING '0' from roadNameBubun) != '',
+		 CONCAT('-' , TRIM(LEADING '0' from roadNameBubun)), ''))) roadName , i.buildYear
+		from houseinfo as i 
+		left join houselike as l
+			on i.aptCode = l.aptCode
+		left join dongCode as d
+			on i.dongCode = d.dongCode
 		where l.user_id = #{id}
 	</select>
 

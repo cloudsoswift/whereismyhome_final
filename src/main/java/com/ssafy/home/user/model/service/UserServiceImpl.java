@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
 	public ArrayList<UserInterestDTO> getUserInterest(String id) throws Exception{
 		ArrayList<UserInterestDTO> list = new ArrayList<UserInterestDTO>();
 		list.addAll(mapper.getUserInterestArea(id));
-		list.addAll(mapper.getUserInterestDeal(id));
+		list.addAll(mapper.getUserInterestApart(id));
 		return list;
 	}
 	

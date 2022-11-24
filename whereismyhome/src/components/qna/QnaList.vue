@@ -16,9 +16,9 @@
                                     @click="$router.push({name: 'qnawrite'})">글쓰기</button>
                         </div>
                         <div class="col-md-7 offset-3">
-                            <form class="d-flex" id="form-search" action="">
+                            <div class="d-flex">
                                 <select class="form-select form-select-sm ms-5 me-1 w-50"
-                                    name="key" aria-label="검색조건">
+                                    v-model="key" aria-label="검색조건">
                                     <option value="" selected>검색조건</option>
                                     <option value="subject">제목</option>
                                     <option value="content">내용</option>
@@ -28,7 +28,7 @@
                                         placeholder="검색어..." @keyup.enter="search"/>
                                     <button id="btn-search" class="btn btn-dark" type="button" @click="search">검색</button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                     <table class="table table-hover">

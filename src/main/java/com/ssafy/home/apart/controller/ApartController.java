@@ -57,9 +57,10 @@ public class ApartController extends HttpServlet {
 		List<HouseDTO> list = new ArrayList<HouseDTO>();
 		map.put("code", dongCode);
 		String token = request.getHeader("access-token");
-		if(token != null && jwtService.checkToken(token)) {
+		if(token != null ) {
 			try {
 				UserDTO user = jwtService.getUser("access-token");
+				System.out.println(user);
 			}catch (Exception e) {
 				e.printStackTrace();
 				return exceptionHandling(e);
@@ -131,7 +132,7 @@ public class ApartController extends HttpServlet {
 			if(user != null) {
 				HouseLikeDTO houseLikeDTO = new HouseLikeDTO();
 				houseLikeDTO.setUser_id(user.getUserId());
-				houseLikeDTO.setNo(no);
+				houseLikeDTO.setAptCode(no);
 				houseLikeDTO.setIp_address(req.getHeader("X-FORWARDED-FOR"));
 				service.addInterestApart(houseLikeDTO);
 				System.out.println("관심아파트 등록 완료");
@@ -153,7 +154,7 @@ public class ApartController extends HttpServlet {
 			if(user != null) {
 				Map<String, String> map = new HashMap<String, String>();
 				map.put("user_id", user.getUserId());
-				map.put("no", no);
+				map.put("aptCode", no);
 				service.deleteInterestApart(map);
 				System.out.println("관심아파트 삭제 완료");
 				return new ResponseEntity<Integer>(1, HttpStatus.OK);

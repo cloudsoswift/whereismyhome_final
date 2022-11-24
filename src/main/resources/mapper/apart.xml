@@ -32,15 +32,15 @@
 
 	<insert id="addInterestApart" parameterType="HouseLikeDTO">
 		insert into
-		houselike (user_id, no, register_time, ip_address)
+		houselike (user_id, aptCode, register_time, ip_address)
 		values(#{user_id},
-		#{no}, now(), #{ip_address})
+		#{aptCode}, now(), #{ip_address})
 	</insert>
 
 	<delete id="deleteInterestApart" parameterType="Map">
 		delete from
 		houselike
-		where user_id = #{user_id} and no = #{no}
+		where user_id = #{user_id} and aptCode = #{aptCode}
 	</delete>
 
 </mapper>

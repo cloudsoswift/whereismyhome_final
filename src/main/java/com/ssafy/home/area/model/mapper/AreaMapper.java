@@ -9,7 +9,7 @@ import com.ssafy.home.area.model.AreaLikeDTO;
 
 public interface AreaMapper {
 	ArrayList<Map> getSido() throws SQLException;
-	ArrayList<Map> getGugun(String code) throws SQLException;
+	ArrayList<Map> getGugun(Map param) throws SQLException;
 	ArrayList<Map> getDong(String code) throws SQLException;
 	
 	void addInterestArea(AreaLikeDTO dto) throws SQLException;

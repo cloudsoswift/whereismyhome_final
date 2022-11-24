@@ -21,8 +21,8 @@ public class AreaServiceImpl implements AreaService {
 	}
 
 	@Override
-	public ArrayList<Map> getGugun(String code) throws Exception {
-		return areaMapper.getGugun(code);
+	public ArrayList<Map> getGugun(Map param) throws Exception {
+		return areaMapper.getGugun(param);
 	}
 
 	@Override

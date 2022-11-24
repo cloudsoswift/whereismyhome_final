@@ -3,7 +3,7 @@ package com.ssafy.home.apart.model;
 public class HouseLikeDTO {
 	private int like_id;
 	private String user_id;
-	private String no;
+	private String aptCode;
 	private String register_time;
 	private String ip_address;
 	
@@ -20,11 +20,11 @@ public class HouseLikeDTO {
 		this.user_id = user_id;
 	}
 
-	public String getNo() {
-		return no;
+	public String getAptCode() {
+		return aptCode;
 	}
-	public void setNo(String no) {
-		this.no = no;
+	public void setAptCode(String aptCode) {
+		this.aptCode = aptCode;
 	}
 	public String getRegister_time() {
 		return register_time;
@@ -40,7 +40,7 @@ public class HouseLikeDTO {
 	}
 	@Override
 	public String toString() {
-		return "ApartDTO [like_id=" + like_id + ", user_id=" + user_id + ", no=" + no + ", register_time="
+		return "ApartDTO [like_id=" + like_id + ", user_id=" + user_id + ", aptCode=" + aptCode + ", register_time="
 				+ register_time + ", ip_address=" + ip_address + "]";
 	}
 

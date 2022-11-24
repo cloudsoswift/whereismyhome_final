@@ -3,8 +3,8 @@
         <b-card class="shadow-sm mb-2">
             <a href="#none" @click="goCenter"><h4 class="card-title">{{apartmentName}}</h4></a>
             <b-card-text>{{roadName}}</b-card-text>
-            <button type="button" class="btn p-0" style="width: 30px; height: 30px;" :data-code="aptCode">
-                <font-awesome-icon :icon="like_id < 0 ? 'fa-regular fa-bookmark' :'fa-solid fa-bookmark'" @click.prevent="InterestApart" :data-code="aptCode"></font-awesome-icon>
+            <button type="button" class="btn p-0 position-absolute top-0 end-0" style="width: 30px; height: 30px;" @click.prevent="InterestApart" v-if="isLogin">
+                <font-awesome-icon :icon="!isBookmark ? 'fa-regular fa-bookmark' :'fa-solid fa-bookmark'" :data-code="aptCode"></font-awesome-icon>
             </button>
             <b-row>
                 <button class="btn" @click="loadArea()" v-b-toggle="`${aptCode}`"><font-awesome-icon :icon="aptCode == apartCode ? 'fa-solid fa-angles-up' : 'fa-solid fa-angles-down'" /></button>
@@ -22,7 +22,7 @@
 <script>
 import http from '@/util/http';
 import { Chart, LineController, LineElement, PointElement, CategoryScale, LinearScale } from 'chart.js';
-import { mapMutations, mapState } from "vuex";
+import { mapGetters, mapMutations, mapState } from "vuex";
 
 export default {
     name: 'ApartInfoItem',
@@ -32,10 +32,12 @@ export default {
             areas: [],
             myChart: undefined,
             isAreaChosen: false,
+            isBookmark: this.like_id > 0 ? true : false,
         };
     },
     computed: {
-        ...mapState(['apartCode'])
+        ...mapState(['apartCode', 'tokens']),
+        ...mapGetters(['isLogin'])
     },
     mounted() {
         Chart.register(LineController, LineElement, PointElement, CategoryScale, LinearScale);
@@ -47,6 +49,7 @@ export default {
             this.SET_CENTER_POS({lat: this.lat, lng: this.lng});
         },
         loadArea(){
+            this.goCenter();
             if(this.aptCode == this.apartCode){
                 this.SET_APART_CODE("");
                 return;
@@ -83,7 +86,6 @@ export default {
                     case 200:
                         console.log(data);
                         if(data.length != 0){
-
                             if(this.myChart != undefined) 
                                 this.myChart.destroy();
                             this.myChart = new Chart(
@@ -111,7 +113,78 @@ export default {
             })
         },
         InterestApart(){
-
+            const options = {
+                headers: {
+                    "access-token": this.tokens.accessToken,
+                }
+            }
+            if(this.isBookmark){
+                // 북마크임 -> 북마크 삭제
+                http.delete(`/apart/like/${this.aptCode}`, options)
+                .then(({status})=>{
+                    switch(status){
+                        case 200:
+                        // HttpStatus.OK
+                        this.isBookmark = false;
+                        break;
+                    case 403:
+                        //HttpStatus.FORBIDDEN
+                        alert("북마크 삭제에 실패했습니다. 다시 시도해주세요");
+                        break;
+                    case 500:
+                        //HttpStatus.INTERNAL_SERVER_ERROR
+                        alert("서버와 통신중 에러가 발생했습니다.");
+                        this.$router.push("/");
+                        break;
+                    }
+                }).catch(async({response})=>{
+                    switch(response.status){
+                        case 401:
+                            //HttpStatus.UNAUTHORIZED
+                            await this.$store.dispatch("tokenRefresh")
+                            if(!this.isLogin){
+                                alert("로그인이 만료되었습니다.");
+                                this.$router.push("/user/login");
+                            } else {
+                                alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                            }
+                            break;
+                    }
+                })
+            } else {
+                // 북마크 아님 -> 북마크 등록
+                http.post(`/apart/like/${this.aptCode}`, {}, options)
+                            .then(({status})=>{
+                switch(status){
+                    case 200:
+                    // HttpStatus.OK
+                    this.isBookmark = true;
+                    break;
+                case 403:
+                    //HttpStatus.FORBIDDEN
+                    alert("북마크 삭제에 실패했습니다. 다시 시도해주세요");
+                    break;
+                case 500:
+                    //HttpStatus.INTERNAL_SERVER_ERROR
+                    alert("서버와 통신중 에러가 발생했습니다.");
+                    this.$router.push("/");
+                    break;
+                }
+                }).catch(async({response})=>{
+                    switch(response.status){
+                        case 401:
+                            //HttpStatus.UNAUTHORIZED
+                            await this.$store.dispatch("tokenRefresh")
+                            if(!this.isLogin){
+                                alert("로그인이 만료되었습니다.");
+                                this.$router.push("/user/login");
+                            } else {
+                                alert("토큰을 갱신했습니다. 다시 시도해주세요");
+                            }
+                            break;
+                    }
+                })
+            }
         }
     },
 };
