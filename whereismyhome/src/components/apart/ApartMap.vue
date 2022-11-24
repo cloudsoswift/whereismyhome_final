@@ -111,21 +111,6 @@ export default {
                 infowindow.close();
             });
         },
-        // displayOverlay(position, message){
-        //     var content = `<div class="tooltip b-tooltip bs-tooltip-top bs-tooltip-top-docs" role="tooltip">
-        //      <div class="arrow" style="left:calc(50% - 6px)">
-        //      </div> 
-        //      <div class="tooltip-inner">${message.apartmentName}</div> 
-        //      </div>`;
-
-        //     // 커스텀 오버레이를 생성합니다
-        //     var customOverlay = new kakao.maps.CustomOverlay({
-        //         position: position,
-        //         content: content   
-        //     });
-        //     this.markerList.push(customOverlay);
-        //     customOverlay.setMap(this.map);
-        // },
         mapMarker(address, data) {
             this.hideMarker();
             // 주소-좌표 변환 객체를 생성합니다
@@ -146,7 +131,6 @@ export default {
             // 매매 정보 주소를 좌표로 변환하기
             data.forEach((apt) => {
                 this.displayMarker(new kakao.maps.LatLng(apt.lat, apt.lng), apt, markerImage);
-                // this.displayOverlay(new kakao.maps.LatLng(apt.lat, apt.lng), apt);
             });
 
         },
